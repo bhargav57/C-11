@@ -77,9 +77,24 @@ void test_reverse()
     printVector(v);
 }
 
+
+/* This function uses the std::max_element() method to sort the data*/
+void test_max_and_min_element()
+{
+    vector<int> v(10);
+    v = std::move(generateVectorData());
+    std::cout<<"Original data\n";
+    printVector(v);
+    std::cout<<"Maximum element = "<<*max_element(begin(v),end(v))<<"\n";
+
+    std::cout<<"Minimum Element = "<<*min_element(begin(v),end(v))<<"\n";
+
+    std::cout<<"Accumulated sum = "<<std::accumulate(begin(v),end(v),0);
+}
 int main()
 {
     test_std_generate();
     test_std_sort();
     test_reverse();
+    test_max_and_min_element();
 }
