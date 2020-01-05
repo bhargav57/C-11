@@ -33,6 +33,7 @@ public:
 		size = obj.size;
 		int *k;
 		int *m;
+        std::cout<<"Copy Constructor is called \n";
 
 		try
 		{
@@ -52,9 +53,9 @@ public:
 	}
 	data(data &&obj):size(obj.size),p(obj.p)
 	{
+	    std::cout<<"Move Constructor is called \n";
 		obj.size = 0;
 		obj.p = nullptr;
-		std::cout<<"Move Constructor is called \n";
 	}
 	void show()
 	{

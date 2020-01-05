@@ -91,15 +91,16 @@ void test_max_and_min_element()
 
     std::cout<<"Minimum Element = "<<*min_element(begin(v),end(v))<<"\n";
 
-    std::cout<<"Accumulated sum = "<<std::accumulate(begin(v),end(v),0);
+    std::cout<<"Accumulated sum = "<<std::accumulate(begin(v),end(v),0)<<"\n";
 }
 int main()
 {
-    /*test_std_generate();
+    test_std_generate();
     test_std_sort();
     test_reverse();
-    test_max_and_min_element();*/
+    test_max_and_min_element();
 
 
+    /* it calls the function of the class copyConstructor */
     callConstructor();
 }

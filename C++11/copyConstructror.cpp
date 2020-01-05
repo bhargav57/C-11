@@ -12,6 +12,12 @@ int callConstructor()
 {
 	data obj1(6);
 	obj1.show();
+
+	/* this will call the copy constructor */
+	data obj3 = obj1;
+	obj3.show();
+
+	/* this will call the move constructor */
 	data obj2 = std::move(generateResource());
 	obj2.show();
 	return 0;
