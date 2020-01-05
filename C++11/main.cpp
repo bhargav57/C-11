@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include "copyConstructor.h"
 using namespace std;
 
 /* This is a print utility function which takes the constant reference of the vector of integer*/
@@ -93,8 +95,11 @@ void test_max_and_min_element()
 }
 int main()
 {
-    test_std_generate();
+    /*test_std_generate();
     test_std_sort();
     test_reverse();
-    test_max_and_min_element();
+    test_max_and_min_element();*/
+
+
+    callConstructor();
 }
