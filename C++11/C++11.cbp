@@ -31,6 +31,8 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="copyConstructor.h" />
+		<Unit filename="copyConstructror.cpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

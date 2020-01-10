@@ -93,14 +93,62 @@ void test_max_and_min_element()
 
     std::cout<<"Accumulated sum = "<<std::accumulate(begin(v),end(v),0)<<"\n";
 }
+
+/* This function uses the std::count() method to count the specific element */
+void countData()
+{
+    int arr[] = {10,20,30,40,5,6,7,8,9};
+    int n = sizeof(arr)/sizeof(arr[0]);
+    vector<int> v(arr,arr+n);
+
+    std::cout<<"Original data\n";
+    printVector(v);
+    int cnt = std::count(begin(v),end(v),5);
+    std::cout<<"the count is "<<cnt<<"\n";
+
+
+    auto p = std::find(begin(v),end(v),5);
+    std::cout<<*p<<"\n";
+
+}
+
+/* This function uses the std::binary_search() method to search the specific element */
+void binarySearch()
+{
+    int arr[] = {10,20,30,40,5,6,7,8,9};
+    int n = sizeof(arr)/sizeof(arr[0]);
+    vector<int> v(arr,arr+n);
+
+    std::cout<<"Original data\n";
+    printVector(v);
+    std::sort(begin(v),end(v));
+    if(std::binary_search(begin(v),end(v),9))
+        std::cout<<"element is there \n";
+    else
+        std::cout<<"Element is not present \n";
+
+      if(std::binary_search(begin(v),end(v),99))
+        std::cout<<"element is there \n";
+    else
+        std::cout<<"Element is not present \n";
+
+}
+
 int main()
 {
     test_std_generate();
     test_std_sort();
     test_reverse();
     test_max_and_min_element();
+    countData();
+    binarySearch();
+    std::cout<<"\n\n\n\n\n";
+/////////////////////////////////////////////////////////////////
+    int p{};
+    std::cout<<p;
 
-
+    std::cout<<"\n\n\n\n\n";
+//////////////////////////////////////////////////////////////////
     /* it calls the function of the class copyConstructor */
     callConstructor();
 }
