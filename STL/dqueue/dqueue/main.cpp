@@ -93,16 +93,87 @@ public:
 	iterator end()
 	{
 		if( _tail != nullptr)
-		return iterator(_tail->_next);
+		{
+			return iterator(_tail->_next);
+		}
 		else
+		{
 			return nullptr;
+		}
 	}
 
-	bool empty();
+	class const_iterator
+	{
+		typedef const_iterator selfType;
+		typedef node<T>* pointer;
 
+		pointer _ptr;
+	public:
+		const_iterator(pointer ptr):_ptr(ptr){}
+		selfType operator++(int junk)
+		{
+			this->_ptr = this->_ptr->_next;
+			return *this;
+		}
+		const T& operator*()
+		{
+			return this->_ptr->_data;
+		}
+		bool operator!=(selfType rhs)
+		{
+			return this->_ptr != rhs._ptr;
+		}
+		bool operator==(selfType rhs)
+		{
+			return this->_ptr == rhs._ptr;
+		}
+	};
+	const const_iterator cbegin()
+	{
+		return const_iterator(_head);
+	}
+
+	const const_iterator cend()
+	{
+		if( _tail != nullptr)
+		{
+			return const_iterator(_tail->_next);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+
+	T& operator[](int idx)
+	{
+		node<T> *temp = _head;
+		if(idx <= _size)
+		{
+			while( idx > 0 )
+			{
+				temp = temp->_next;
+				idx--;
+			}
+			return temp->_data;
+		}
+		else
+		{
+			std::cout<<"[dequeue size] Requesting data out of size";
+		}
+	}
+
+	
+
+	
+
+	/* Dequeue manipulating methods */
+	bool empty();
 	void pop_front();
 	void pop_back();
 	int size();
+	T& front();
+	T& back();
 };
 
 
@@ -381,6 +452,20 @@ int deq<T>::size()
 {
 	return _size;
 }
+
+template<typename T>
+T& deq<T>::front()
+{
+	node<T> *temp = _head;
+	return temp->_data;
+}
+
+template<typename T>
+T& deq<T>::back()
+{
+	node<T> *temp = _tail;
+	return temp->_data;
+}
 /* TDD */
 void compare()
 {
@@ -435,24 +520,29 @@ deq<T> getObj()
 /* */
 int main()
 {
-	deq<int> obj1;
+	/*deq<int> obj1;
 	obj1.push_front(5);
 	obj1.push_front(6);
 	obj1.push_front(7);
 	obj1.push_front(8);
 	obj1.push_front(9);
-	obj1.push_back(4);
+	obj1.push_back(4);*/
+
+	//int j = obj1[20];
 
 	/*obj1.pop_front();
 	obj1.pop_front();*/
 	//obj1.pop_front();
 
+	/*obj1.pop_back();
 	obj1.pop_back();
-	obj1.pop_back();
-	obj1.pop_back();
+	obj1.pop_back();*/
+
+	/*obj1.front() = 99;
 	
+	obj1.back() = 505;
 	std::cout<<obj1.empty()<<"\n";
-	std::cout<<"size ="<<obj1.size()<<"\n";
+	std::cout<<"size ="<<obj1.size()<<"\n";*/
 	//compare();
 	/*obj1.push_front(5);
 	obj1.push_front(6);
@@ -465,13 +555,34 @@ int main()
 
 	//obj1.show();
 
-	deq<int>::iterator itr = obj1.begin();
+	/*deq<int>::iterator itr = obj1.begin();
 	while(itr != obj1.end())
 	{
 		std::cout<<*itr<<" ";
 		itr = itr++;
-	}
+	}*/
 
+	/*deq<int>::const_iterator itr = obj1.cbegin();
+	while( itr != obj1.cend())
+	{
+		std::cout<<*itr<<" ";
+		itr++;
+	}*/
+
+	deq<char> objS;
+
+	objS.push_back('A');
+	objS.push_back('D');
+	objS.push_front('a');
+	objS.push_front('x');
+
+	deq<char>::const_iterator itr = objS.cbegin();
+	while( itr != objS.cend())
+	{
+		char data = *itr;
+		cout<<data<<" ";
+		itr++;
+	}
 	/*deq<int> obj2(obj1);
 	deq<int>::iterator itr = obj2.begin();
 	while(itr != obj2.end())
