@@ -1,0 +1,13 @@
+log.txt
+*.exe
+*.pdb
+*.sdf
+*.tlog
+*.obj
+*.log
+*.manifest
+*.lastbuildstate
+*.cache
+*.ipch
+*.opensdf
+*.idb
