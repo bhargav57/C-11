@@ -163,7 +163,17 @@ public:
 		}
 	}
 
-	
+	deq<T>& operator=(deq<T>&& rhs)
+	{
+		_head = rhs._head;
+		_tail = rhs._tail;
+		_size = rhs._size;
+
+		rhs._head = nullptr;
+		rhs._tail = nullptr;
+		rhs._size = 0;
+		return this;
+	}
 
 	
 
@@ -174,6 +184,7 @@ public:
 	int size();
 	T& front();
 	T& back();
+	void swap(deq<T>& rhs);
 };
 
 
@@ -466,6 +477,25 @@ T& deq<T>::back()
 	node<T> *temp = _tail;
 	return temp->_data;
 }
+
+template<typename T>
+void deq<T>::swap(deq<T>& rhs)
+{
+	node<T>* tempTail, *tempHead;
+	int tempSize;
+	tempHead = rhs._head;
+	tempTail = rhs._tail;
+	tempSize = rhs._size;
+
+	rhs._head = this->_head;
+	rhs._tail = this->_tail;
+	rhs._size = this->_size;
+
+	this->_head = tempHead;
+	this->_tail = tempTail;
+	this->_size = tempSize;
+}
+
 /* TDD */
 void compare()
 {
@@ -570,11 +600,19 @@ int main()
 	}*/
 
 	deq<char> objS;
+	deq<char> objs2;
 
 	objS.push_back('A');
 	objS.push_back('D');
 	objS.push_front('a');
 	objS.push_front('x');
+
+
+	objs2.push_back('k');
+	objs2.push_back('l');
+	objs2.push_back('m');
+
+	objS.swap(objs2);
 
 	deq<char>::const_iterator itr = objS.cbegin();
 	while( itr != objS.cend())
@@ -583,6 +621,8 @@ int main()
 		cout<<data<<" ";
 		itr++;
 	}
+
+	
 	/*deq<int> obj2(obj1);
 	deq<int>::iterator itr = obj2.begin();
 	while(itr != obj2.end())
