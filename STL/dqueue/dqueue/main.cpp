@@ -71,6 +71,16 @@ public:
 			this->_ptr = this->_ptr->_next;
 			return *this;
 		}
+		selfType operator--()
+		{
+			_ptr = this->_ptr->_prev;
+			return *this;
+		}
+		selfType operator--(int i)
+		{
+			this->_ptr = this->_ptr->_prev;
+			return *this;
+		}
 		bool operator!=(selfType rhs)
 		{
 			return this->_ptr != rhs._ptr;
@@ -95,6 +105,22 @@ public:
 		if( _tail != nullptr)
 		{
 			return iterator(_tail->_next);
+		}
+		else
+		{
+			return nullptr;
+		}
+	}
+	iterator rbegin()
+	{
+		return iterator(_tail);
+	}
+
+	iterator rend()
+	{
+		if( _head != nullptr)
+		{
+			return iterator(_head->_prev );
 		}
 		else
 		{
@@ -550,13 +576,21 @@ deq<T> getObj()
 /* */
 int main()
 {
-	/*deq<int> obj1;
+	deq<int> obj1;
 	obj1.push_front(5);
 	obj1.push_front(6);
 	obj1.push_front(7);
 	obj1.push_front(8);
 	obj1.push_front(9);
-	obj1.push_back(4);*/
+	obj1.push_back(4);
+
+	deq<int>::iterator itr = obj1.rbegin();
+
+	while( itr != obj1.rend())
+	{
+		std::cout<<*itr;
+		itr--;
+	}
 
 	//int j = obj1[20];
 
@@ -599,7 +633,7 @@ int main()
 		itr++;
 	}*/
 
-	deq<char> objS;
+	/*deq<char> objS;
 	deq<char> objs2;
 
 	objS.push_back('A');
@@ -620,7 +654,7 @@ int main()
 		char data = *itr;
 		cout<<data<<" ";
 		itr++;
-	}
+	}*/
 
 	
 	/*deq<int> obj2(obj1);
