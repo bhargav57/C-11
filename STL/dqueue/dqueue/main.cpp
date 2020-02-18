@@ -50,12 +50,13 @@ public:
 	
 	class iterator
 	{
+		public:
 		typedef iterator selfType;
 		typedef node<T>* pointer;
 		typedef node<T>& reference;
 		typedef node<T> nodObj;
 		pointer _ptr;
-	public:
+	
 		selfType(pointer ptr):_ptr(ptr)
 		{
 		}
@@ -211,6 +212,38 @@ public:
 	T& front();
 	T& back();
 	void swap(deq<T>& rhs);
+	iterator erase(iterator pos)
+	{
+		node<T>* temp;
+	   if( pos._ptr == _head )
+		{
+			 temp = pos._ptr;
+			_head = pos._ptr->_next;
+			_head->_prev = nullptr;
+			temp = nullptr;
+			_size--;
+			return iterator(_head);
+		}
+		else if( pos._ptr == _tail)
+		{
+			temp = pos._ptr->_prev;
+			temp->_next = nullptr;
+			_tail = temp;
+			_size--;
+			return iterator(temp);
+
+		}
+		else
+		{
+			temp = pos._ptr->_prev;
+			temp->_next = temp->_next->_next;
+			temp = temp->_next;
+			temp->_prev = temp->_prev->_prev;
+			pos._ptr = nullptr;
+			_size--;
+			return iterator(temp);
+		}
+	}
 };
 
 
@@ -522,6 +555,12 @@ void deq<T>::swap(deq<T>& rhs)
 	this->_size = tempSize;
 }
 
+//template<typename T>
+//iterator deq<T>::erase(deq<T>::iterator *pos)
+//{
+//	
+//
+//}
 /* TDD */
 void compare()
 {
@@ -577,19 +616,35 @@ deq<T> getObj()
 int main()
 {
 	deq<int> obj1;
+	obj1.push_front(4);
 	obj1.push_front(5);
 	obj1.push_front(6);
 	obj1.push_front(7);
 	obj1.push_front(8);
 	obj1.push_front(9);
-	obj1.push_back(4);
 
-	deq<int>::iterator itr = obj1.rbegin();
 
-	while( itr != obj1.rend())
+	//deq<int>::iterator itr = obj1.erase(obj1.begin());
+	//deq<int>::iterator itr = obj1.rbegin();
+
+	deq<int>::iterator itr = obj1.begin();
+	while( itr != obj1.end())
 	{
-		std::cout<<*itr;
-		itr--;
+		std::cout<<*itr<<" ";
+		itr++;
+		//obj1.erase(itr);
+	}
+	std::cout<<"after delete\n";
+	itr = obj1.rbegin();
+	itr--;
+	//itr++;
+	itr  = obj1.erase(itr);
+	itr = obj1.begin();
+	while( itr != obj1.end())
+	{
+		std::cout<<*itr<<" ";
+		itr++;
+		//obj1.erase(itr);
 	}
 
 	//int j = obj1[20];
