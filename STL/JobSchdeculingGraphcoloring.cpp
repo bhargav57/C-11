@@ -5,6 +5,7 @@
 #include<algorithm>
 using namespace std;
 
+//user can use the enumeraton for the color instead of the vector of the string list.
 vector<std::string> col{ "red","green", "blue", "white", "pink", "nocolor" };
 class job
 {
