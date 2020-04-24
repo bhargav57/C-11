@@ -1,0 +1,7 @@
+1. What is used by hash internally, 
+2. difference between hash and map
+3. when call move constructor and move assign operator.
+4. when used the move and forward keyword
+5. initalizer list with template argument
+6. design pattern is_a / Has A 
+7. difference between factory pattern and abstract facory pattern

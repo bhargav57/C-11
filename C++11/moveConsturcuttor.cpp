@@ -7,7 +7,7 @@ class A
 	int* p;
 public:
 	A() = default;
-	A(const A &o)
+	A(const A& o)
 	{
 		int* k;
 		size = o.size;
@@ -37,7 +37,7 @@ public:
 			j++;
 		}
 	}
-	A(A &&obj)
+	A(A&& obj)
 	{
 		std::cout << "move const\n";
 		size = obj.size;
@@ -109,6 +109,17 @@ int main()
 	o4.print();
 
 	A o5;
+	std::cout << "Object 5\n";
 	o5 = getObj();
+
+	/* this code call the move constructor 
+	A o5 = move(o)
+	*/
+	
+	/* this code calle move assignemnt 
+	A o5;
+    o5 = move(o);
+	*/
+
 	o5.print();
 }
