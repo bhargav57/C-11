@@ -48,6 +48,29 @@ now some one calls the same function with second argument as a constant,
 up to how many combinations we have to go....its a tedious job and to mitigate that situation and make appropriate call we have to introduce
 a new concepts call perfect farwarding with veradic templates argument
 
+r-value can be passed to the l-vlaue reference accepting functions but it need a const argument
+like for r value reference
+
+fun(5, 6.f); 
+
+we need below function
+void fun(const int& ii, const float& ff)
+{
+	std::cout << "const normal value [ l-values+ r-values ]\n";
+}
+ 
+R-value is basically constant reference, please read below description for the detail like why r-vlaue reference is const lavalue refernece
+
+1st answer:
+An r-value is a temporary evanescent object, that can be read but is about to be destroyed. It is also a value that cannot stay on the left-hand side of an assignment (how could you make sense of assigning values to such a ghost?)
+
+C++ has a very specific way to deal with this kind of entities. If you could pass an r-value by (non-const) reference, you could also be able to assign to it from inside the function. Therefore the rule that if r-values are to be passed by reference, this has to be a const reference.
+
+This is not the whole truth though, because you have, indeed, r-value references (denoted with &&). So, you can, in the end, manipulate a temporary object, but you have to make an explicit statement that you really want to do so, using r-value references.
+
+second answer
+It gets back to the definition of literal. A literal is a constant; e.g.the value of the number 5 will not change, ever, though a variable may change from being assigned the value of 5 to another value. Passing a literal by reference implies that the function may modify it, which is something you can't do to a literal, by definition, which is why the language requires that you modify it with const. I don't think C++ could modify literals even if it let you try, but it still enforces this convention to remind the programmer that a literal value cannot be modified.
+
 Please see below code which will work with all type of variables as well as the arguments
 */
 
