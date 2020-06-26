@@ -1,0 +1,49 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+/* 
+here is the formula is
+1 step: 
+take two variable include and exclude
+include = 0th index element = arr[0]
+exclude = 0 intially
+
+now start loop from the first element instead of the 0th element
+and calculate new include and exclude like this
+include = exclude + current index element = exclude + arr[1]  --> for first loop
+exclude = maximum of the previous include and exclude = max(include[0],exclude[0])
+
+it would be better to calculate the exclude first and store in temporary variable,
+then once we calculate the include variable value then assign the temp exclude value to original exclude
+
+loop untill the size of the arry
+*/
+
+int maxSubsetSum(const vector<int>& arr) {
+
+
+	int inc;
+	int excl;
+	int s = arr.size();
+
+	inc = arr[0];
+	excl = 0;
+
+	for (int i = 1; i < s; ++i)
+	{
+		int tempExclude = inc > excl ? inc : excl;
+		inc = excl + arr[i];
+		excl = tempExclude;
+
+	}
+	return inc>excl? inc:excl;
+}
+int main()
+{
+	vector<int> vec{ 5,5,10,40,50,35 };
+	int ans;
+	ans = maxSubsetSum(vec);
+	std::cout << ans;
+	return 0;
+}
