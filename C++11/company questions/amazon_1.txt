@@ -1,0 +1,100 @@
+/*
+user gives a a feedback/search and as a search/feedback he or she types some keywords,
+we want to see the keyword which is used the most time or lets say the frequency of the words,
+those word need to returned as a string 
+exclude some of the common words given as the exculsion list
+*/
+
+
+#include<iostream>
+#include<vector>
+#include <utility>
+#include<map>
+#include<algorithm>
+using namespace std;
+
+vector<string> rmfuw(string input, vector<string> wtoe)
+{
+	std::map<string,int> data;
+    vector<string> fd;
+    string word = "";
+    for (auto x : input)
+    {
+        if (x == ' ')
+        {
+            //cout << word << endl;
+
+            std::vector<string>::iterator sitr = begin(wtoe);
+            bool flag = true;
+            while (sitr != end(wtoe))
+            {
+                string tempData = *sitr;
+                if (tempData.compare(word) == 0)
+                {
+                    flag = false;
+                    break;
+                }
+                sitr++;
+            }
+
+            if (flag == true)
+            {
+                std::map<string, int>::iterator it;
+                it = data.find(word);
+                if (it != data.end())
+                {
+                    std::pair<string, int> temppair = *it;
+                    data.erase(it);
+                    int cnt = temppair.second;
+                    cnt++;
+                    data.insert(std::pair<string, int>(word, cnt));
+
+                }
+                else
+                {
+                    data.insert(std::pair<string, int>(word, 1));
+                }
+               
+            }
+            word = "";
+        }
+        else
+        {
+            word = word + x;
+        }
+    }
+
+    std::map<string, int>::iterator mapItr = data.begin();
+
+    int maxcount = 0;
+    while (mapItr != data.end())
+    {
+        std::pair< string, int> tmp = *mapItr;
+        if (tmp.second > maxcount)
+        {
+            maxcount = tmp.second;
+        }
+        mapItr++;
+    }
+
+    mapItr = data.begin();
+    while (mapItr != data.end())
+    {
+        std::pair< string, int> tmp = *mapItr;
+        if (tmp.second == maxcount)
+        {
+            fd.push_back(tmp.first);
+        }
+        mapItr++;
+    }
+
+    return fd;
+}
+
+int main()
+{
+	std::string a= "Purchase order item fix Purchase too item order";
+	std::vector<string> wte = {"help","fix","too","is","for"};
+	rmfuw(a, wte);
+	return 0;
+}

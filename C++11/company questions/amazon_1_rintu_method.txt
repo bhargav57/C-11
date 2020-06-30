@@ -1,0 +1,139 @@
+#include<iostream>
+#include<vector>
+#include <utility>
+#include<map>
+#include<algorithm>
+using namespace std;
+
+
+struct Strdata
+{
+	string word;
+	int freq;
+	Strdata(string inWord, int infre) :word(inWord), freq(infre)
+	{
+
+	}
+};
+
+vector<string> rmfuw(string input, vector<string> wtoe)
+{
+	std::vector<std::string> rd;
+	input = input + ' ';
+	/* 
+	4 arguments
+	replace a character use the transofrm which take end and begin of input
+	begin of the same collection
+	trasnformation is done using the lamda 
+	*/
+
+	std::transform(begin(input), end(input), begin(input), [](char c) {return tolower(c); });
+
+	/*
+	4 argument
+	Replace the punctuation with replace if
+	start and begin
+	lamda which says true/false
+	final value to replace
+	*/
+	replace_if(begin(input), end(input), [](const char& c) {return ispunct(c) ? true : false; },' ');
+	replace_if(begin(input), end(input), [](const char& c) {return isdigit(c) ? true : false; }, ' ');
+
+	for (auto const& e : input)
+	{
+		//std::cout << e;
+	}
+
+	/*
+	Etract the word and match with excluding word if the extracted word does not match then insert into 
+	final list
+	*/
+	std::string word;
+	std::vector<string> extracetd;
+	std::string::const_iterator strItr = begin(input);
+	while (strItr != end(input))
+	{
+		char c = *strItr;
+		if (c == ' ')
+		{
+			if(all_of(begin(wtoe), end(wtoe), [=](std::string inStr) 
+				{
+					//std::cout << inStr;
+					if (word.compare(inStr) == 0)
+					{
+						return false;
+					}
+				}))
+			{
+				extracetd.push_back(word);
+			}
+
+			word = "";
+		}
+		else
+		{
+			word += c;
+		}
+		++strItr;
+	}
+
+	vector<Strdata> findalData;
+	vector<string>::iterator itr = begin(extracetd);
+	while (itr != end(extracetd))
+	{
+		std::string tempStr = *itr;
+		vector<Strdata>::iterator finalDataItr = find_if(begin(findalData), end(findalData), [=](Strdata indata)
+			{
+				return indata.word.compare(tempStr) == 0 ? true : false;
+			}
+		);
+		if (finalDataItr == end(findalData))
+		{
+			//Strdata tempData(tempStr, 1);
+			findalData.emplace_back(tempStr, 1);
+		}
+		else
+		{
+			Strdata& tempData = *finalDataItr;
+			tempData.freq++;
+		}
+		
+		++itr;
+	}
+
+	/*
+	sort the vector as per the frequency
+	*/
+	sort(begin(findalData), end(findalData), [](Strdata d1, Strdata d2) 
+		{
+			return d1.freq > d2.freq ? true : false;
+		});
+	
+	/*
+	put the highest string in the string vector
+	*/
+	vector<Strdata>::const_iterator finalDataItr = begin(findalData);
+
+	int maxCount = 0;
+	maxCount = findalData[0].freq;
+
+	for (const Strdata& ip : findalData)
+	{
+		if (ip.freq == maxCount)
+		{
+			string highData = ip.word;
+			rd.push_back(highData);
+		}
+	}
+	
+	
+	return rd;
+}
+
+int main()
+{
+	std::string a= "PURCHASE ORDER ITEM,FIX9PURCHASE too ITEM order";
+	std::vector<string> wte = {"help","fix","too","is","for"};
+	rmfuw(a, wte);
+	return 0;
+}
