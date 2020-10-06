@@ -1,0 +1,13 @@
+A dynamic_cast to void∗ can be used to determine the address of the beginning of an object of polymorphic type. For example:
+void g(Ival_box∗ pb, Date∗ pd)
+    {
+        void* pb2 = dynamic_cast<void*>(pb); // OK
+        void* pd2 = dynamic_cast<void*>(pd); // error : Date not polymorphic
+    }
+The object representing a base class, such as Ival_box, in a derived class object is not necessarily the
+first subobject in that object of the most derived class. So, pb does not necessarily hold the same
+address as pb2.
+
+
+When reference is used for the dynamic cast, if dynamic cast will failed then it will throw bad_cast exception, as referce must point to some object.
+in case of pointer is is assumed that either it is pointing to something or not but in case of referce if it fails then "bad_casr" exception will be thrown by the code.
