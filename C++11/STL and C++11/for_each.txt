@@ -1,0 +1,41 @@
+#include <iostream>
+#include <iterator>
+#include <vector>
+#include <algorithm>
+#include <functional>
+
+using namespace std;
+template<typename T>
+struct Sum
+{
+using value_type = T;
+
+T sum;
+
+Sum(): sum{} {}
+void operator()(T i)
+{
+        sum+= i;
+}
+};
+
+template<typename T>
+void printData(T i)
+{
+        cout<<i<<" ";
+}
+int main()
+{
+        vector<int> vec{1,2,3,4,5,6,7,8,9,0};
+        std::function<void (int)> printFunc(&printData<int>);
+        for_each(begin(vec),end(vec), printData<int>);
+
+        cout<<"\n";
+
+        for_each(begin(vec),end(vec),printFunc);
+
+        Sum<int> sum = for_each(begin(vec), end(vec), Sum<int>());
+
+        cout<<sum.sum<<"\n";
+        return 0;
+}

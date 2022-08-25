@@ -1,0 +1,47 @@
+#include <iostream>
+#include <map>
+
+using namespace std;
+class simpleObject
+{
+        public:
+                int x;
+                int y;
+                string data;
+                simpleObject():x(1),y(2),data("Default data")
+                {
+                }
+                simpleObject(int x,int y,string data):x(x),y(y),data(data)
+        {
+        }
+
+};
+int main()
+{
+        map<string,simpleObject> so;
+        so.insert(pair<string,simpleObject>("first",simpleObject(2,3,"firstData")));
+
+        so["second"]=simpleObject();
+        so["second"]=simpleObject(3,4,"second Data");
+
+        so["third"]=simpleObject(4,5,"Third data");
+
+        so.insert({"fourth",simpleObject(5,6,"Fourth Data")});
+
+        const auto[iterator, inserted] = so.insert({"third",simpleObject(6,7,"second third")});
+
+        if(inserted)
+        {
+                cout<<"inserted\n";
+        }
+        else
+        {
+                cout<<"key exist at location "<<iterator->first<<", cannot insert twice\n";
+        }
+        for(const auto& T:so)
+        {
+                cout<<T.first<<" -->"<<T.second.data<<"\n";
+        }
+
+        return 0;
+}

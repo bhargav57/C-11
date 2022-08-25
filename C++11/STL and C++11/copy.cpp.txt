@@ -1,0 +1,37 @@
+#include <iostream>
+#include <algorithm>
+#include <iterator>
+#include <vector>
+
+using namespace std;
+
+int main()
+{
+        vector<int> v{1,2,3,4,5,6,7,8,9,10,11,12};
+        vector<int> cvec;
+
+        copy(begin(v),end(v),back_inserter(cvec));
+
+        copy(begin(cvec),end(cvec),ostream_iterator<int>(cout," "));
+
+        cout<<"\n";
+
+        cvec.clear();
+
+
+        copy_if(begin(v),end(v),back_inserter(cvec),[](int i){return i%3==0;});
+
+
+        copy(begin(cvec),end(cvec),ostream_iterator<int>(cout," "));
+
+        cout<<"\n";
+
+        cvec.clear();
+
+        copy_n(begin(v),5,back_inserter(cvec));
+
+        copy(begin(v),end(v),ostream_iterator<int>(cout,"+"));
+
+        cout<<"\n";
+        return 0;
+}

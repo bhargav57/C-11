@@ -1,0 +1,47 @@
+#include <iostream>
+#include <array>
+#include <algorithm>
+#include <string_view>
+
+using namespace std;
+
+int main()
+{
+        constexpr std::array months{
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December"
+        };
+
+const auto sameLatter{ std::adjacent_find(begin(months),end(months),[](const auto& a,const auto& b)
+                                                                      {
+                                                                        return (a[0]==b[0]);
+                                                                      }) };
+                if(sameLatter != end(months))
+                {
+                        cout<<*sameLatter <<" and "<< *std::next(sameLatter)<<" start with the same latter\n";
+                }
+
+
+
+                auto data = [](std::string_view str)
+                {
+                        return (str.length() == 5);
+                };
+
+                int  flm = std::count_if(begin(months),end(months),data);
+
+                cout<<"\n"<<flm<<"\n";
+
+
+return 0;
+}

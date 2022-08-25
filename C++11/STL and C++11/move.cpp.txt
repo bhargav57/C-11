@@ -1,0 +1,20 @@
+#include <iostream>
+#include <memory>
+#include <algorithm>
+#include <vector>
+
+using namespace std;
+
+int main()
+{
+        vector<unique_ptr<int>> intPtr;
+
+        for(int i=0; i<10; i++){
+                unique_ptr tmp = make_unique<int>();
+                *tmp = i;
+                intPtr.push_back(std::move(tmp));
+                cout<<boolalpha;
+                cout<<(tmp == nullptr);
+        }
+        return 0;
+}

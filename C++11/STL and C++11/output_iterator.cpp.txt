@@ -1,0 +1,20 @@
+#include <iostream>
+#include <vector>
+#include <iterator>
+#include <numeric>
+
+using namespace std;
+double myOp(double x,double y){return x+y+1;}
+int main()
+{
+        istream_iterator<double> end;
+        istream_iterator<double> start(cin);
+
+        ostream_iterator<double> outstream(cout);
+
+        while(start!=end)
+        {
+                *outstream++ = *start++;
+        }
+        return 0;
+}

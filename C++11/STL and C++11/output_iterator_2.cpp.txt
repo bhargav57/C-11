@@ -1,0 +1,27 @@
+#include <iostream>
+#include <vector>
+#include <iterator>
+#include <numeric>
+
+using namespace std;
+double myOp(double x,double y){return x+y+1;}
+int main()
+{
+        istream_iterator<double> end;
+        istream_iterator<double> start(cin);
+
+        vector<double> doubles;
+        back_insert_iterator<vector<double>> bins(doubles);
+
+        while(start!= end)
+        {
+                *bins++ = *start++;
+        }
+
+        partial_sum(doubles.begin(), doubles.end(), ostream_iterator<double>(cout," "));
+
+        partial_sum(doubles.begin(), doubles.end(), ostream_iterator<double>(cout," "),myOp);
+
+        cout<<"\n";
+        return 0;
+}

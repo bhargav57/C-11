@@ -1,0 +1,44 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <memory>
+#include <thread>
+#include <mutex>
+using namespace std;
+
+
+class foo
+{
+          int x;
+        public:
+              foo (int d):x(d)
+                              {
+
+                                          }
+        ~foo()
+        {
+                                              cout<<"Destructor\n";
+                                                  }
+        int getX()
+                                  {
+                                                  return x;
+                                                      }
+};
+void fun(std::shared_ptr<foo> sp,int count)
+{
+        static std::mutex m1;
+        std::lock_guard<std::mutex> loc(m1);
+        cout<<"thread: "<<count<<" "<<sp.use_count()<<"\n";
+}
+int
+main ()
+{
+        std::shared_ptr<foo> sp(new foo(100));
+
+        thread t1(fun,sp,1), t2(fun,sp,2), t3(fun,sp,3);
+
+        t1.join();
+        t2.join();
+        t3.join();
+        return 0;
+}

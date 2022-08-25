@@ -1,0 +1,32 @@
+#include <iostream>
+#include <list>
+using namespace std;
+
+int main()
+{
+        list<int> numbers{1,2,3,4,5,6,7,8,9,10};
+        list<int> others{1,2,3,4,5,6,7,8,9,0};
+
+        numbers.merge(others);
+
+        cout<<"numbers size:"<<numbers.size()<<"\n";
+        cout<<"other size:"<<others.size()<<"\n";
+
+        for(auto i= numbers.begin(); i != numbers.end(); i++)
+        {
+                cout<<*i<<" ";
+        }
+
+        cout<<"\n";
+
+
+        numbers.unique();
+
+
+        for(auto i= numbers.begin(); i != numbers.end(); i++)
+        {
+                cout<<*i;
+        }
+        cout<<"\n";
+        return 0;
+}

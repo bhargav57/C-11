@@ -1,0 +1,33 @@
+#include <iostream>
+#include <deque>
+#include <stack>
+using namespace std;
+
+int main()
+{
+        deque<int> tra;
+
+        tra.push_front(400);
+        tra.push_front(500);
+
+        tra.push_back(100);
+        tra.push_back(200);
+
+        for(auto  i = begin(tra); i!= end(tra); ++i)
+        {
+                cout<<*i<<"\n";
+        }
+
+        stack<int> stac;
+        stac.push(100);
+        stac.push(200);
+        stac.push(300);
+        stac.push(400);
+
+
+        while(!stac.empty()){
+        cout<<stac.top()<<"\n";
+        stac.pop();
+        }
+        return 0;
+}

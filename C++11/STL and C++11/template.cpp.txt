@@ -1,0 +1,43 @@
+#include<iostream>
+
+using namespace std;
+
+template<typename T>
+class Container{
+
+        T t;
+        public:
+        explicit Container(T t):t(t)
+        {
+        }
+        friend std::ostream& operator<<(std::ostream& os,const Container<T>& c)
+        {
+                return (os<<"container contain"<<c.t<<"\n");
+        }
+};
+template<typename X>
+bool isGreator(X x1, X x2)
+{
+        return x1 > x2;
+}
+template<>
+bool isGreator(int x1,int x2)
+{
+        std::cout<<"specialized for int\n";
+        return x1>x2;
+}
+int main()
+{
+        cout<<std::boolalpha;
+        Container<int> c(100);
+        Container<string> s("some string");
+
+        cout<<c;
+        cout<<s;
+
+        cout<<isGreator(5,10);
+        cout<<isGreator(42.43,10.5);
+        cout<<isGreator("ZZZ","AAA");
+        cout<<isGreator('a','c');
+        return 0;
+}
