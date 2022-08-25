@@ -1,0 +1,9 @@
+git clone <url> -> go to your repor -> code -> green color code drop down copu url
+
+go to directory where files have been added
+
+git add .
+
+git commit -m "Message"
+
+git push master origin
