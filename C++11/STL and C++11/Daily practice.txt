@@ -1,0 +1,304 @@
+#include <iostream>
+
+using namespace std;
+
+template<typename T>
+class container
+{
+    T d;
+    public:
+    explicit container(T data):d(data)
+    {
+        
+    }
+    friend std::ostream& operator<<(std::ostream& os,const container<T>& data)
+    {
+        return (os<<data.d);
+    }
+};
+
+int main()
+{
+    container<int> c(100);
+    container<string> a("ABC");
+    cout<<c<<" "<<a;
+
+    return 0;
+}
+---------------
+#include <iostream>
+
+using namespace std;
+template<typename T>
+class shrdPtr
+{
+    T *p;
+    public:
+    shrdPtr(T *d):p(d)
+    {
+        
+    }
+    ~shrdPtr()
+    {
+        cout<<"destructor\n";
+        delete p;
+    }
+    T& operator*()
+    {
+        return *p;
+    }
+};
+
+int main()
+{
+    int* p= new int(10);
+    shrdPtr<int> sp(p);
+    cout<<*p;
+    
+    *p= 20;
+    
+    cout<<*p;
+    
+    return 0;
+}
+----------------------------
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+
+using namespace std;
+
+
+int main()
+{
+    vector<int> v{1,2,3,4,5,6,7,8,9,10};   
+
+    vector<int> out;
+    
+    copy(begin(v),end(v),ostream_iterator<int>(cout,"+"));
+    
+    
+    copy_if(begin(v),end(v),back_inserter(out),[](int i){return i%2==0;});
+    
+    
+    copy(begin(out),end(out),ostream_iterator<int>(cout," "));
+
+    
+    return 0;
+}
+-----------------------------------------------------------------------
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+
+using namespace std;
+template<typename T>
+void printData(T data)
+{
+    for(auto a: data)
+    {
+        cout<<a<<"\n";
+    }
+}
+
+int main()
+{
+    vector<int> v{1,2,3,4,5,6,7,8,9,10};   
+
+    vector<int> out;
+    
+    copy(begin(v),end(v),ostream_iterator<int>(cout,"+"));
+    
+    
+    copy_if(begin(v),end(v),back_inserter(out),[](int i){return i%2==0;});
+    
+    
+    copy(begin(out),end(out),ostream_iterator<int>(cout," "));
+
+    printData<vector<int>>(out);
+    
+    
+    for_each(begin(out),end(out),[](int a){cout<<a;});
+    return 0;
+}
+--------------------------------------------------------------
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <functional>
+
+using namespace std;
+class student
+{
+    
+    public:
+    string name;
+    int id;
+    student(string iname, int iid):name(iname), id(iid)
+    {
+        
+    }
+    
+};
+
+int main()
+{
+   
+   student s1("abc",1);
+   student s2("efg",2);
+   student s3("hij",3);
+   
+   vector<student> vs1{s1,s2,s3};
+   
+   
+   student a1("abc",1);
+   student a2("efg1",2);
+   student a3("hij1",3);
+   
+   vector<student> vs2{a1,a2,a3};
+   
+   
+  std::function<bool(const student&, const student&)> id_equal = [](const student& s1, const student& s2)
+  {
+      return (s1.id == s2.id);
+  };
+  
+  std::function<bool(const student&, const student&)> compare_all = [](const student& s1, const student& s2)
+  {
+      return ((s1.id == s2.id) &&
+              (s1.name == s2.name));
+  };
+  
+  
+//   std::function<bool(const student&, const student&)> id_only =
+//                 [](const student& s1,const student& s2){
+//                         return s1.id == s2.id;
+//                 };
+  cout<<boolalpha;
+  
+  auto e = equal(begin(vs1),end(vs1),begin(vs2),id_equal);
+  
+  cout<<e<<"\n";
+  
+  e = equal(begin(vs1),end(vs1),begin(vs2),compare_all);
+  
+  cout<<e;
+   
+  return 0;
+}
+----------------------------
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <iterator>
+#include <functional>
+
+using namespace std;
+
+int main()
+{
+   
+  vector<string> fruits{"apple","mango","almond","berry"}; 
+  cout<<boolalpha;
+  
+ 
+   
+//   auto e = find_if(begin(fruits),end(fruits),[](string s){return s=="almond";});
+   
+//   cout<<*e;
+
+   auto cmpfun = [](string s)
+                    {
+                        return s=="almond";
+                    };
+   auto e = find_if(begin(fruits),end(fruits),cmpfun);
+   
+   cout<<*e;
+   return 0;
+}
+-----------------------------------
+
+
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <utility>
+using namespace std;
+
+void get(int& a)
+{
+    cout<<"[L value]\n";
+}
+
+void get(const int& a)
+{
+    cout<<"[R value]\n";
+}
+
+template<typename T>
+void AsperTheArg(T&& x)
+{
+    cout<<"here\n";
+    get(x);
+    get(std::forward<T>(x));
+}
+
+int main()
+{
+    
+    int a1 =5;
+    
+    // get(a1);
+    
+    // get(7);
+    
+    AsperTheArg(a1);
+    AsperTheArg(7);
+    return 0;
+}
+-----------------------------
+#include <iostream>
+#include <utility>
+using namespace std;
+
+void get(int& a)
+{
+    cout<<"[L value]\n";
+}
+
+void get(const int& a)
+{
+    cout<<"[R value]\n";
+}
+
+template<typename A>
+void AsperTheArg(A&& x)
+{
+    cout<<"here\n";
+    //get(x);
+    get(std::forward<A>(x));
+}
+
+int main()
+{
+    
+    int a1 =5;
+    
+    // get(a1);
+    
+    // get(7);
+    
+    AsperTheArg(a1);
+    AsperTheArg(7);
+    return 0;
+}

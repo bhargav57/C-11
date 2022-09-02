@@ -1,0 +1,35 @@
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <algorithm>
+
+using namespace std;
+
+int main()
+{
+        vector<unique_ptr<int>> intPtr;
+
+        for(int i=0;i<10; ++i)
+        {
+                unique_ptr tmp=make_unique<int>();
+                *tmp = i;
+                intPtr.push_back(std::move(tmp));
+        }
+
+        for_each(begin(intPtr),end(intPtr),[](const unique_ptr<int>& i){cout<<*i<<"\n";});
+
+        cout<<"\n";
+
+        vector<unique_ptr<int>> morePtr;
+
+        move(begin(intPtr),end(intPtr),back_inserter(morePtr));
+
+        cout<<boolalpha;
+
+        for_each(begin(intPtr),end(intPtr),[](const unique_ptr<int>& i)
+                        {
+                                cout<< (i == nullptr);
+                        });
+
+        cout<<"\n";
+}

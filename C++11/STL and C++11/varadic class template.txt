@@ -1,0 +1,16 @@
+template<int...>
+struct add;
+
+template<>
+struct add<>
+{
+  static constexpr int value = 0;
+};
+
+template<int i, int... tail>
+struct add<i, tail...>
+{
+  static constexpr int value = i + add<tail...>::value;
+};
+
+static_assert(6 == add<1, 2, 3>::value, "Expect 6");
