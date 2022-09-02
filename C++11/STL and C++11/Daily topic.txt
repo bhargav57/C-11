@@ -8,7 +8,9 @@ find_if using lamda
 perfact forwarding
 printData
 std::move and unq_ptr
-shard+ptr and 
+remove_copy_if
+sort and transform
+shard_ptr and 
 move constructor
 varadic template
 

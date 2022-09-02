@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <utility>
+#include <iterator>
+#include <functional>
+#include <cctype>
+
+using namespace std;
+
+string toLowerCase(const string& s)
+{
+    string temp;
+    std::transform(begin(s),end(s),back_insert_iterator<string>(temp),[](unsigned char c)
+    {
+        return tolower(c);
+    });
+    return temp;
+}
+
+template<typename T>
+void printData(const T& dat)
+{
+    for(const auto& a: dat)
+    {
+        cout<<a<<" ";
+    }
+}
+int main()
+{
+    vector<int> numbers{1,2,6,12,48,1,4,2,10,54,12};
+    vector<string> words{"Hello","hello","zebra","x-ray","apple","123","Apple"};
+    
+    auto it = is_sorted_until(begin(numbers),end(numbers));
+    
+    cout<<"number is sorted for "<<distance(begin(numbers),it)<<" element\n";
+    
+    cout<<boolalpha;
+    
+    cout<<is_sorted(begin(numbers),end(numbers))<<"\n";
+    
+    
+    sort(begin(numbers),end(numbers));
+    
+    sort(begin(words),end(words));
+    
+    printData<vector<int>>(numbers);
+    
+    cout<<"\n";
+    
+    printData<vector<string>>(words);
+    
+    
+    sort(begin(words),end(words),[](string s1,string s2)
+    {
+        return toLowerCase(s1) < toLowerCase(s2);
+    });
+    
+    cout<<"\n";
+    
+    printData<vector<string>>(words);
+    return 0;
+}
