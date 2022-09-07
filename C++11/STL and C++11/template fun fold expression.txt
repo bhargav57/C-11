@@ -1,0 +1,35 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cctype>
+#include <iterator>
+using namespace std;
+
+template<typename ... Ts>
+auto sum(Ts... ts)
+{
+    return (ts + ...);
+}
+
+template <typename ... Ts>
+auto product(Ts ... ts)
+{
+    return (ts * ... * 1);
+}
+
+int main()
+{
+    int the_sum {sum(1, 2, 3, 4, 5)}; // Value: 15
+    
+    
+     std::string a {"Hello "};
+     std::string b {"How r u?"};
+
+     //std::cout << sum(a, b) << '\n'; // Output: Hello World
+     
+     string ssum{sum(a,b)};
+      
+    cout<<the_sum<<"\n";
+    cout<<ssum;
+    return 0;
+}

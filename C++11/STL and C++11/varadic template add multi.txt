@@ -1,0 +1,31 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cctype>
+#include <iterator>
+using namespace std;
+
+template<typename T, typename ... TS>
+void addMulti(T& vec,TS ... ts)
+{
+    (vec.push_back(ts), ...);
+}
+
+template<typename T>
+void printAll(const T& data)
+{
+    for(const auto& a:data)
+    {
+        cout<<a<<"\n";
+    }
+}
+int main()
+{
+    std::vector<int> v {1, 2,3};
+    
+    addMulti(v,4,5,6,7,8,9,0);
+    
+    printAll<vector<int>>(v);
+   
+    return 0;
+}

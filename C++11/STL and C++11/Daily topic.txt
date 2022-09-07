@@ -13,6 +13,7 @@ sort and transform
 shard_ptr and 
 move constructor
 varadic template
+template fun fold expression
 
 
 
