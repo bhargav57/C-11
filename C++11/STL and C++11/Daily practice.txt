@@ -468,3 +468,32 @@ int main()
     cout<<ssum;
     return 0;
 }
+-------------------------
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cctype>
+#include <iterator>
+using namespace std;
+
+template<typename T, typename ... TS>
+void addMulti(T& vec,TS ... ts)
+{
+    (vec.push_back(ts), ...);
+}
+
+template<typename ... TS>
+void printAll(TS ... ts)
+{
+    ((cout<<ts), ...);
+}
+int main()
+{
+    std::vector<int> v {1, 2,3};
+    
+    addMulti(v,4,5,6,7,8,9,0);
+    
+    printAll<int>(4,5,6,7,8,9,0);
+   
+    return 0;
+}
