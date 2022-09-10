@@ -1,0 +1,43 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <functional>
+
+using namespace std;
+template<typename T>
+void printAll(const auto& data)
+{
+        for(const auto& a: data)
+        {
+                cout<<a<<" ";
+        }
+        cout<<"\n";
+}
+int main()
+{
+        vector<int> vec{5,2,3,6,1,9,4,8};
+
+        printAll<vector<int>>(vec);
+
+		/*
+		what this nth_element() is doing?, it is giving us the value at nth position if the array or vecotr is sorted, so
+		here we are requesting the 5th sorted element which is "5" so it placed the value 5 at 5th position. it tries to keep
+		all the element smaller than 5 on the left side but wothout sorting and all the bigger element on the right sode of the 5
+		but without sorting, so it is quicker then sort and we can get the element from its position.
+		*/
+        nth_element(begin(vec), begin(vec)+4,end(vec));
+
+
+        printAll<vector<int>>(vec);
+		
+		/*
+		here we are gettign second largest element without sorting as we used std::greater<int>() operator.
+		so value 8 will be placed on the second position after 9 and that is the second highest element.
+		*/
+
+        nth_element(begin(vec),begin(vec)+1,end(vec),std::greater<int>());
+
+        printAll<vector<int>>(vec);
+
+        return 0;
+}

@@ -10,10 +10,13 @@ printData
 std::move and unq_ptr
 remove_copy_if
 sort and transform
+partial sort and nthelement
 shard_ptr and 
 move constructor
 varadic template
 template fun fold expression
+template count vowels
+
 
 
 
