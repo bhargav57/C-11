@@ -221,7 +221,43 @@ int main()
    return 0;
 }
 -----------------------------------
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <memory>
 
+using namespace std;
+
+
+
+int main()
+{
+    
+    vector<unique_ptr<int>> ptr;
+    
+    for(int i=0; i<10; i++)
+    {
+        unique_ptr temp= make_unique<int>();
+        *temp = i;
+        ptr.push_back(std::move(temp));
+    }
+    
+    for_each(begin(ptr),end(ptr),[](const unique_ptr<int>& p1)
+    {
+        cout<<*p1<<" ";
+    });
+    
+    vector<unique_ptr<int>> movedPtr;
+    
+    move(begin(ptr),end(ptr),back_inserter(movedPtr));
+    
+    cout<<boolalpha<<"\n";
+    for_each(begin(movedPtr),end(movedPtr),[](const unique_ptr<int>& p1)
+    {
+        cout<<(p1 == nullptr)<<"\n";
+    });
+    return 0;
+}
 
 /******************************************************************************
 
