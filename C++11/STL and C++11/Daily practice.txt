@@ -621,3 +621,40 @@ int main()
     return 0;
 }
 ---------------------------
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+template<typename ... TS>
+void print(TS ... ts)
+{
+    ((cout<<ts<<" "),...);
+}
+
+int main()
+{
+    char c;
+    string s;
+    int i;
+    float f;
+    std::tuple<char,string,int,float> tp;
+    
+    tp = make_tuple('a',"Bhargav",1,1.5);
+    
+    cout<<get<1>(tp);
+    
+    get<1>(tp) = "Patel";
+    
+    cout<<get<1>(tp)<<"\n";
+    
+    cout<<"tuple size :"<<tuple_size<decltype(tp)>::value<<"\n";
+    
+    
+    std::tie(c,s,i,f) = tp;
+    
+    //cout<<c<<" "<<s<<" "<<i<<" "<<f;
+    
+    print(c,s,i,f);
+
+    return 0;
+}

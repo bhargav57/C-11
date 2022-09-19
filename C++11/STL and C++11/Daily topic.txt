@@ -17,6 +17,15 @@ varadic template
 template fun fold expression
 template count vowels
 
+new topics
+std::tie
+std::tuple
+std::bind
+place holder
+std::variant
+std::visit
+
+
 
 
 
