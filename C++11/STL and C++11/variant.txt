@@ -1,0 +1,94 @@
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+  #include <iostream>
+  #include <variant>
+  #include <list>
+  #include <string>
+  #include <algorithm>      
+
+  using namespace std;
+
+  class cat {
+      string name;
+
+  public:
+      cat(string n) : name{n} {}
+                void meow() const {
+          cout << name << " says Meow!\n";
+      }
+  };
+  
+    class dog {
+        string name;
+
+      public:
+      dog(string n) : name{n} {}
+
+      void woof() const {
+          cout << name << " says Woof!\n";
+      }
+  };
+      /*Now we can define an animal type, which is just a type alias to std::variant<dog, cat>. This is basically the same as an old-school union but has all the extra features that variant provides:*/
+    using animal = variant<dog, cat>;
+	/*
+	Before we write the main program, we implement two helpers first. One helper is an animal predicate. By calling is_type<cat>(...) or is_type<dog>(...), we can find out if an animal variant instance holds a cat or a dog. The implementation just calls holds_alternative, which is a generic predicate function for variant types:*/
+  template <typename T>
+  bool is_type(const animal &a) {
+      return holds_alternative<T>(a);
+  }
+
+int main()
+{
+ struct animal_voice
+  {
+      void operator()(const dog &d) const { d.woof(); }
+      void operator()(const cat &c) const { c.meow(); }
+  };
+  
+  list<animal> l {cat{"Tuba"}, dog{"Balou"}, cat{"Bobby"}};
+  
+  /* first method using the index and if :
+  Now, we print the contents of the list three times, and each time in a different way. One way is using variant::index(). Because animal is an alias of variant<dog, cat>, a return value of 0 means that the variant holds a dog instance. Index 1 means it is a cat. The order of the types in the variant specialization is the key here. In the switch case block, we access the variant with get<T> in order to get the actual cat or dog instance inside:
+  */
+  for (const animal &a : l) {
+              switch (a.index()) {
+              case 0: 
+                  get<dog>(a).woof();
+                  break;
+              case 1:
+                  get<cat>(a).meow();
+                  break;
+              }
+          }
+          cout << "-----\n";
+  /**/
+  
+  /*second method:
+Instead of using the numeric index of the type, we can also explicitly ask for every type. The get_if<dog> returns a dog-typed pointer to the internal dog instance. If there is no dog instance inside, then the pointer is null. This way, we can try to get at different types until we finally succeed:  */
+  
+    for (const animal &a : l) {
+      if (const auto d (get_if<dog>(&a)); d) {
+          d->woof();
+      } else if (const auto c (get_if<cat>(&a)); c) {
+          c->meow();
+      }
+  }
+  cout << "-----\n";
+  /**/
+       
+ /* third method:
+The last and most elegant way is variant::visit. This function accepts a function object and a variant instance. The function object must implement different overloads for all the possible types the variant can hold. We implemented a structure with the right operator() overloads before, so we can use it here: */      
+ for (const animal &a : l) {
+      visit(animal_voice{}, a);
+  }
+  cout << "-----\n";
+  /**/
+
+    return 0;
+}
