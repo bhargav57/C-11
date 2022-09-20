@@ -23,8 +23,9 @@ std::tuple
 std::bind
 place holder
 std::variant
+	--> exmple in c++17
 std::visit
-
+std::optional
 
 
 
