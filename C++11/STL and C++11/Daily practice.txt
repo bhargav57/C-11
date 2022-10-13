@@ -338,6 +338,46 @@ int main()
     AsperTheArg(7);
     return 0;
 }
+--------
+#include <iostream>
+
+using namespace std;
+
+
+void get(int& a)
+{
+    cout<<"[l value]\n";
+}
+void get(const int& a)
+{
+    cout<<"[r value]\n";
+}
+
+// template<typename T>
+// void printData(T&& d)//&& aftet template parameter is known as a universal reference as it is template and type deduction is required.
+// {
+//     //get(d);
+//     get(std::forward<T>(d));
+// }
+
+
+void printData(int&& d)//&& after the specific type is consider as a r-value because no type deduction is needed as it is sepcified here.
+{
+    //get(d);
+    get(std::forward<int>(d));
+}
+
+int main()
+{
+    int a1 =7;
+    
+    // get(5);
+
+    // get(a1);
+    printData(5);
+    printData(std::mov(a1));
+    return 0;
+}
 --------------------
 #include <iostream>
 #include <vector>
@@ -747,3 +787,236 @@ int main()
 
     return 0;
 }
+-------------------------------------
+#include <cstdio>
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+template<typename... Ts>
+auto sum(std::tuple<Ts...> const& theTuple)
+{
+    auto sumData = 0;
+    std::apply
+    (
+        [&sumData](Ts const&... tupleArgs)
+        {
+            sumData = (tupleArgs + ...);
+        }, theTuple
+    );
+    return sumData;
+}
+
+int main()
+{
+     // advanced example
+    std::tuple myTuple{1,2,3,4,5,6,7,8,9,10};
+    cout<<sum( myTuple )<< '\n';
+}
+-------------------------
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <cstdio>
+#include <iostream>
+#include <tuple>
+using namespace std;
+
+template<typename... Ts>
+void sum(std::tuple<Ts...> const& theTuple)
+{
+    
+    std::apply
+    (
+        [](Ts const&... tupleArgs)
+        {
+            ((cout<<tupleArgs<<" "), ...);
+        }, theTuple
+    );
+}
+
+int main()
+{
+     // advanced example
+    std::tuple myTuple{1,2,3,4,5,6,7,8,9,10};
+    sum( myTuple );
+}
+---------------------------
+
+
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <tuple>
+#include <utility>
+using namespace std;
+
+using TupData = tuple<int, double, char>;
+template<typename T>
+class processingContext_c
+{
+  tuple<T> _data;
+  public:
+  template<typename T1>
+  processingContext_c(T1&& d):_data(std::forward<T1> (d))
+  {
+      
+  }
+  
+  
+};
+
+
+struct p1{
+    template<typename ...ARGS>
+    void operator()(ARGS ... data)
+    {
+        int i;
+        double d;
+        char c;
+        ((cout<<data),...);
+        //std::tie(i,d,c)= data;
+    }
+};
+int main()
+{
+    tuple<int, double, char> t{1,3.4,'c'};
+    
+    
+    processingContext_c<TupData> p{t};
+    
+    std::apply(p1{},t);
+    return 0;
+}
+------------------------------
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <tuple>
+#include <utility>
+#include <functional>
+using namespace std;
+
+using TupData = tuple<int, double, char>;
+template<typename T>
+class processingContext_c
+{
+  tuple<T> _data;
+  using invocable_t = std::function< void(T) >;
+
+  std::vector< invocable_t > _invocables;
+  public:
+  template<typename T1>
+  processingContext_c(T1&& d):_data(std::forward<T1> (d))
+  {
+      
+  }
+  
+  template< typename T1, typename... ARGS >
+  void addFunction(ARGS &&...args )
+  {
+       _invocables.emplace_back(  T1{ std::forward< ARGS >( args )... } );
+  }
+ 
+  
+    void execute() const
+    {
+      
+      for ( auto const &invocable : _invocables )
+      {
+        std::apply(invocable, _data);
+      }
+    }
+  
+  
+};
+
+struct p1{
+    template<typename T>
+    void operator()(T data)
+    {
+        int i;
+        double d;
+        char c;
+        //TupData t = data...;
+        // ((cout<<data<<" "),...);
+        std::tie(i,d,c)= data;
+        cout<<i<<d<<c<<"\n";
+    }
+};
+
+struct p2{
+    template<typename ARGS>
+    void operator()(ARGS data)
+    {
+        int i;
+        double d;
+        char c;
+        //((cout<<data<<"+"),...);
+        std::tie(i,d,c)= data;
+        
+        cout<<i<<" "<<d<<" "<<c<<"\n";
+    }
+};
+
+int main()
+{
+    tuple<int, double, char> t{1,3.4,'c'};
+    
+    
+    processingContext_c<TupData> p{t};
+    
+
+    
+    p.addFunction<p1>();
+    
+    p.addFunction<p2>();
+    
+    p.execute();
+    
+    //std::apply(p1{},t);
+    return 0;
+}
+
+/*
+struct p1{
+    template<typename ...ARGS>
+    void operator()(ARGS ... data)
+    {
+        int i;
+        double d;
+        char c;
+        ((cout<<data<<" "),...);
+        //std::tie(i,d,c)= data;
+    }
+};
+
+struct p2{
+    template<typename ...ARGS>
+    void operator()(ARGS ... data)
+    {
+        int i;
+        double d;
+        char c;
+        ((cout<<data<<"+"),...);
+        //std::tie(i,d,c)= data;
+    }
+};
+*/

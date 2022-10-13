@@ -26,6 +26,7 @@ std::variant
 	--> exmple in c++17
 std::visit
 std::optional
+varadia tuple and std::apply
 
 
 
