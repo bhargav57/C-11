@@ -1020,3 +1020,261 @@ struct p2{
     }
 };
 */
+-------------------------------------------------------------
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <algorithm>
+#include <memory>
+#include <vector>
+
+using namespace std;
+
+class train
+{
+    string name;
+    public:
+    train(string st) : name(st)
+    {
+        
+    }
+    string get()
+    {
+        return name;
+    }
+};
+
+class track
+{
+    string name;
+    public:
+    track(string st) : name(st)
+    {
+        
+    }
+    string get()
+    {
+        return name;
+    }
+};
+
+
+class station
+{
+    string name;
+    public:
+    station(string st) : name(st)
+    {
+        
+    }
+    string get()
+    {
+        return name;
+    }
+};
+
+
+
+class trainInterface_c
+{
+    public:
+    virtual void operator()(station &,train & ) = 0;
+    virtual ~trainInterface_c() = default;
+
+  protected:
+    trainInterface_c() = default;
+    trainInterface_c( const trainInterface_c & ) = delete;
+    trainInterface_c &operator=( const trainInterface_c & ) = delete;
+    trainInterface_c( trainInterface_c && ) = default;
+    trainInterface_c &operator=( trainInterface_c && ) = default;
+};
+
+class trainId_c : public trainInterface_c
+{
+public:
+    void operator()(station &data,train &t)
+    {
+        cout<<t.get()<<" at "<<data.get();
+    }
+};
+
+class platformId_c : public trainInterface_c
+{
+public:
+    void operator()(station &data,train &t)
+    {
+        cout<<t.get()<<" at "<<data.get();
+    }
+};
+
+template< typename TYPE >
+class propagator_c
+{
+  protected:
+    std::vector< std::unique_ptr< TYPE > > _processors;
+
+    template< typename... ARGS >
+    void propagate( ARGS &&...args ) const
+    {
+      for ( const auto &subprocessor : _processors )
+      {
+        if ( subprocessor )
+        {
+          subprocessor->operator()( std::forward< ARGS >( args )... );
+        }
+      }
+    }
+
+
+  public:
+    template< typename PROCESSOR_TYPE, typename... PROCESSOR_ARGS >
+    void create( PROCESSOR_ARGS &&...args )
+    {
+      _processors.emplace_back( std::make_unique< PROCESSOR_TYPE >( std::forward< PROCESSOR_ARGS >( args )... ) );
+    }
+
+    void add( std::unique_ptr< TYPE > &&processorPtr )
+    {
+      _processors.push_back( std::move( processorPtr ) );
+    }
+ };
+ 
+class train_c:propagator_c< trainInterface_c >
+{
+    public:
+    void fun()
+    {
+        train trainData("Vande Bharat");
+        station stData("Mumbai Central");
+        track trData("Mumbai-Ahmendabad");
+        
+        trainId_c obj;
+        create<trainId_c>();
+        
+        platformId_c obj2;
+        
+        propagate(stData,trainData);
+    }
+};
+
+int main()
+{
+    
+    train_c obj;
+    obj.fun();
+
+    return 0;
+}
+----------------------------------------------------
+ /* observer pattern */ 
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <algorithm>
+#include <memory>
+#include <vector>
+
+using namespace std;
+
+class weatherInterface_c
+{
+
+  public:
+  virtual void operator()(int temp,int hum,int airspeed) = 0;
+  virtual ~weatherInterface_c() = default;
+  
+  protected:
+  weatherInterface_c() = default;
+  weatherInterface_c( const weatherInterface_c & ) = delete;
+  weatherInterface_c &operator=( const weatherInterface_c & ) = delete;
+  weatherInterface_c( weatherInterface_c && ) = default;
+  weatherInterface_c &operator=( weatherInterface_c && ) = default;
+  
+};
+
+class BarodaWeatherStation_c : public weatherInterface_c
+{
+    public:
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Baroda \n";
+        cout<<"Temprature:"<<temp<<" Humidity:"<<hum<<" air speed:"<<airspeed<<"\n";
+    }
+};
+
+class PuneWeatherStation_c : public weatherInterface_c
+{
+    public:
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Pune \n";
+        cout<<"Temprature:"<<temp<<" Humidity:"<<hum<<" air speed:"<<airspeed<<"\n";
+    }
+};
+
+class DelhiWeatherStation_c : public weatherInterface_c
+{
+    public:
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Delhi \n";
+        cout<<"Good air quality as air speed:"<<airspeed<<" will take away all air polution\n";
+    }
+};
+
+template< typename TYPE >
+class WeatherData_c
+{
+    public:
+    vector<std::unique_ptr< TYPE >> _processor;
+    
+    template<typename ... ARGS>
+    void prapogate(ARGS ... args)
+    {
+        for(const auto& subProc: _processor)
+        {
+            subProc->operator()(forward<ARGS>(args)...);
+        }
+    }
+    
+    template< typename PROCESSOR_TYPE, typename... PROCESSOR_ARGS >
+    void create(PROCESSOR_ARGS &&...args )
+    {
+      _processor.emplace_back(std::make_unique< PROCESSOR_TYPE >( std::forward< PROCESSOR_ARGS >( args )... ) );
+    }
+    
+};
+
+class allIndia_c:WeatherData_c< weatherInterface_c >
+{
+    public:
+    void fun(int a,int b,int c)
+    {
+        create<BarodaWeatherStation_c>();
+        create<PuneWeatherStation_c>();
+        create<DelhiWeatherStation_c>();
+        prapogate(a,b,c);
+    }
+};
+
+int main()
+{
+    
+   allIndia_c c;
+    
+   c.fun(4,5,6);
+
+   return 0;
+}
