@@ -1186,3 +1186,137 @@ int main()
 
    return 0;
 }
+-------------------------
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <algorithm>
+#include <memory>
+#include <vector>
+
+using namespace std;
+
+class weatherInterface_c
+{
+
+  public:
+  virtual void operator()(int temp,int hum,int airspeed) = 0;
+  virtual ~weatherInterface_c() = default;
+  
+  protected:
+  weatherInterface_c() = default;
+  weatherInterface_c( const weatherInterface_c & ) = delete;
+  weatherInterface_c &operator=( const weatherInterface_c & ) = delete;
+  weatherInterface_c( weatherInterface_c && ) = default;
+  weatherInterface_c &operator=( weatherInterface_c && ) = default;
+  
+};
+
+class BarodaWeatherStation_c : public weatherInterface_c
+{
+    public:
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Baroda \n";
+        cout<<"Temprature:"<<temp<<" Humidity:"<<hum<<" air speed:"<<airspeed<<"\n";
+    }
+};
+
+class PuneWeatherStation_c : public weatherInterface_c
+{
+    public:
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Pune \n";
+        cout<<"Temprature:"<<temp<<" Humidity:"<<hum<<" air speed:"<<airspeed<<"\n";
+    }
+};
+
+class DelhiWeatherStation_c : public weatherInterface_c
+{
+    public:
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Delhi \n";
+        cout<<"Good air quality as air speed:"<<airspeed<<" will take away all air polution\n";
+    }
+};
+
+class BombayWeatherStation_c : public weatherInterface_c
+{
+    int i;
+    public:
+    BombayWeatherStation_c(int ii):i(ii)
+    {
+        
+    }
+    void operator()(int temp,int hum,int airspeed) 
+    {
+        cout<<"Weather of Bombay \n";
+        cout<<"Temprature due to Humidity is:"<<i*temp<<"\n";
+    }
+};
+
+template< typename TYPE >
+class WeatherData_c
+{
+    public:
+    vector<std::unique_ptr< TYPE >> _processor;
+    
+    template<typename ... ARGS>
+    void prapogate(ARGS ... args)
+    {
+        for(const auto& subProc: _processor)
+        {
+            subProc->operator()(forward<ARGS>(args)...);
+        }
+    }
+    
+    template< typename PROCESSOR_TYPE, typename... PROCESSOR_ARGS >
+    void create(PROCESSOR_ARGS &&...args )
+    {
+      _processor.emplace_back(std::make_unique< PROCESSOR_TYPE >( std::forward< PROCESSOR_ARGS >( args )... ) );
+    }
+    
+};
+
+class allIndia_c:WeatherData_c< weatherInterface_c >
+{
+    public:
+    void fun(int a,int b,int c)
+    {
+        create<BarodaWeatherStation_c>();
+        create<PuneWeatherStation_c>();
+        create<DelhiWeatherStation_c>();
+        create<BombayWeatherStation_c>(7);
+        prapogate(a,b,c);
+    }
+};
+
+class weatherUpdate_c
+{
+   allIndia_c c;
+   
+   public:
+   void newDataUpdate(int temp,int hum, int airspeed)
+   {
+        cout<<"New Data is available --------->\n";  
+        c.fun(temp,hum,airspeed);
+        cout<<"end of all weather station update --------->\n\n\n\n";  
+   }
+};
+int main()
+{
+    
+  weatherUpdate_c wuc;
+  wuc.newDataUpdate(4,5,6);
+  wuc.newDataUpdate(7,8,9);
+  
+   return 0;
+}
