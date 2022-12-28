@@ -1321,6 +1321,129 @@ int main()
    return 0;
 }
 -----------------------
+
+/******************************************************************************
+
+operator() overloaded
+
+*******************************************************************************/
+#include <iostream>
+#include <vector>
+#include <memory>
+using namespace std;
+
+class weatherInterface
+{
+  public:
+  virtual void operator()(int i,int j,int k) = 0;
+  virtual void operator()(int i) = 0;
+};
+
+class BarodaWeather:public weatherInterface
+{
+    public:
+    void operator()(int i,int j,int k)
+    {
+        cout<<"Baroda update ......\n";
+        cout<<"temprature: "<<i<<" Humidity: "<<j<<" wind speed: "<<k<<"\n";
+    }
+    void operator()(int i)
+    {
+        cout<<"Baroda update 2......\n";
+    }
+    
+};
+
+class puneWeather:public weatherInterface
+{
+    public:
+    void operator()(int i,int j,int k)
+    {
+        cout<<"Pune update ......\n";
+        cout<<"Moiture level: "<<i*j<<"\n";
+        cout<<"wind speed: "<<k<<"\n";
+    }
+    void operator()(int i)
+    {
+        cout<<"Pune update 2......\n";
+    }
+    
+};
+
+class DelhiWeather:public weatherInterface
+{
+    public:
+    void operator()(int i,int j,int k)
+    {
+        cout<<"Delhi update ......\n";
+        cout<<"wind speed: "<<k<<"\n";
+    }
+    void operator()(int i)
+    {
+        cout<<"Delhi update 2......\n";
+    }
+    
+};
+
+
+template<typename T>
+class stationInterface
+{
+  public:  
+  vector< unique_ptr<T> > _ptrVec;
+  
+  
+  template<typename weatherStation,typename ... WeatherPara>
+  void create(WeatherPara ... wp)
+  {
+      _ptrVec.emplace_back( std::make_unique<weatherStation>(std::forward<WeatherPara>(wp)...));
+  }
+  
+  
+  
+  
+  template<typename ... ARGS>
+  void process(ARGS ... args)
+  {
+      for(const auto& data: _ptrVec)
+      {
+          data->operator()(std::forward<ARGS>(args)...);
+      }
+  }
+  
+  template<typename ... ARGS>
+  void process2(ARGS ... args)
+  {
+      for(const auto& data: _ptrVec)
+      {
+          data->operator()(std::forward<ARGS>(args)...);
+      }
+  }
+};
+
+class stations:public stationInterface< weatherInterface >
+{
+    public:
+    void fun(int a,int b,int c)
+    {
+        create<BarodaWeather>();
+        create<puneWeather>();
+        create<DelhiWeather>();
+        process(a,b,c);
+        
+        process2(a);
+    }
+};
+
+int main()
+{
+   stations st;
+   st.fun(4,5,6);
+   st.fun(9,1,16);
+  
+   return 0;
+}
+-------------
 unstable partition based on predicate
 // Online C++ compiler to run C++ program online
 #include <iostream>
