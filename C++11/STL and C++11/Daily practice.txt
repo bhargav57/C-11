@@ -1550,3 +1550,100 @@ int main() {
 
   return 0;
 }
+
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <iostream>
+#include <vector>
+#include <memory>
+using namespace std;
+
+class Weatherinterface
+{
+    public:
+    virtual void operator()(int i, int j,int k)=0;
+};
+
+class baroda:public Weatherinterface
+{
+    public:
+    void operator()(int i, int j,int k)
+    {
+        cout<<"Baroda ="<<i*j*k;
+    }
+};
+
+class pune:public Weatherinterface
+{
+    public:
+    void operator()(int i, int j,int k)
+    {
+        cout<<"Pune ="<<i+j+k;
+    }
+};
+
+template<typename T>
+class weathercal
+{
+    vector<unique_ptr<T>> vecData;
+    public:
+    
+    template<typename T1,typename ... ARGS>
+    void create(ARGS&& ... args)
+    {
+        vecData.emplace_back(std::make_unique<T1>(std::forward<ARGS>(args) ...));
+    }
+    
+    // template<typename T1,typename ... ARGS>
+    // void update(ARGS ... args)
+    // {
+    //     for(const auto& obj: vecData)
+    //     {
+    //         obj->operator()(std::forward(args)...); <-- my mistake that <ARGS> is not added in std::forwrd<ARGS>(args)...
+    //     }
+    // }
+    void printData()
+    {
+        cout<<vecData.size();
+    }
+    
+    // template<typename T1,typename T2, typename T3>
+    // void update(T1 i,T2 j,T3 k)
+    // {
+    //     for(const auto& obj: vecData)
+    //     {
+    //         obj->operator()(i,j,k);
+    //     }
+    // }
+    
+    template<typename ... ARGS>
+    void prapogate(ARGS ... args)
+    {
+        for(const auto& subProc: vecData)
+        {
+            subProc->operator()(forward<ARGS>(args)...);
+        }
+    }
+};
+int main()
+{
+   
+    
+    weathercal<baroda> obj1;
+    obj1.create<baroda>();
+    
+    int i=4;
+    int j=5;
+    int k=6;
+    // obj1.update<baroda>(i,j,k);
+    obj1.printData();
+    //obj1.update(i,j,k);
+    obj1.prapogate(i,j,k);
+    return 0;
+}
