@@ -1770,3 +1770,49 @@ int main()
     obj1.prapogate(i,j,k);
     return 0;
 }
+---------------------------
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <thread>
+#include <mutex>
+#define TRANSACT 100000
+using namespace std;
+
+
+void deposit(int& account,mutex& m)
+{
+    for(int i=0; i<TRANSACT ; ++i )
+    {
+        lock_guard<mutex> lock(m);
+        ++account;
+    }
+}
+
+void withdraw(int& account,mutex& m)
+{
+     for(int i=0; i<TRANSACT ; ++i )
+     {
+        lock_guard<mutex> lock(m);
+        --account;
+     }
+}
+
+int main()
+{
+    auto threads = thread::hardware_concurrency();
+    mutex m;
+    
+    cout<<threads<<"\n";
+    
+    int account  = 0;
+    
+    thread t1(deposit, std::ref(account),std::ref(m));
+    thread t2(withdraw,std::ref(account),std::ref(m));
+    
+    t1.join();
+    t2.join();
+    
+    cout<<"account value: "<<account<<"\n";
+    return 0;
+}
