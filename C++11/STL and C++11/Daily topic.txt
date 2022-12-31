@@ -30,6 +30,9 @@ varadia tuple and std::apply
 partition based on predicate
 
 find and search
+multex
+lock
+shared_lock
 
 
 

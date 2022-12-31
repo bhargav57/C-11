@@ -1816,3 +1816,78 @@ int main()
     cout<<"account value: "<<account<<"\n";
     return 0;
 }
+----------------------
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <algorithm>
+#include <shared_mutex>
+#include <chrono>
+#include <thread>
+
+using namespace std;
+
+struct DataSource
+{
+  private:
+    shared_mutex mut;
+    int value =0;
+  public:
+  DataSource() = default;
+  int get()
+  {
+      shared_lock lock(mut);
+      cout<<"getting value: "<<value<<"\n";
+      return value;
+  }
+  
+  void set(int v)
+  {
+      unique_lock lock(mut);
+      value = v;
+      cout<<"setting value:"<<value<<"\n";
+  }
+  
+};
+
+
+void readWorker(DataSource& ds)
+{
+    while(true)
+    {
+        ds.get();
+        this_thread::sleep_for(500ms);
+    }
+}
+
+void writeWorker(DataSource& ds)
+{
+    while(true)
+    {
+        auto i=ds.get();
+        ds.set(i+1);
+        this_thread::sleep_for(2s);
+    }
+}
+int main()
+{
+   DataSource d;
+   thread writeThread(&writeWorker, std::ref(d));
+   
+   
+   for(int i=0; i<20; ++i)
+   {
+       thread t(&readWorker, std::ref(d));
+       t.detach();
+   }
+   
+   writeThread.join();
+   return 0;
+}
