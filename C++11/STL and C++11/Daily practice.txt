@@ -1971,3 +1971,37 @@ int main()
     return 0;
 }
 -------------------
+#include <iostream>
+#include <string>
+#include <memory>
+#include <vector>
+#include<algorithm>
+#include <numeric>
+using namespace std;
+template<typename T>
+class da{
+    T* d;
+public:
+    da(T* id):d(id)
+    {
+        
+    }
+    friend ostream& operator<<(ostream& os, da<T> obj)
+    {
+        return (os << *(obj.d));
+    }
+    T& operator*()
+    {
+        return *d;
+    }
+};
+
+int main()
+{
+   da<int> p(new int(7));
+   cout<<*p;
+   *p=50;
+   cout<<*p;
+   cout<<p;
+   return 0;
+}
