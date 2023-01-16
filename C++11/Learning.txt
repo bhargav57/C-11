@@ -1,0 +1,9 @@
+#shared pointer
+
+1. if the pointer is shared then please used internal structure as a shared if u wnat to add them something later
+2. if the shared pointer coming as an argument then use push back if it is shared pointer of vector type
+3. if the shared pointer is created inside a function and consume also inside the function then use the emplace_back() for the vector.
+
+
+#optional
+1. if two optiona argument then create a separte constructore for the same.

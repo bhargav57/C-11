@@ -1,0 +1,529 @@
+#include "dialog.h"
+#include "ui_dialog.h"
+#include <QCoreApplication>
+#include <QVector>
+#include <QMap>
+#include <QPair>
+#include <QSet>
+#include <QHash>
+
+
+struct edge{
+    int _startVertex;
+    int _endVertex;
+    int _weight;
+    edge(int s,int e,int w = -1):_startVertex(s),_endVertex(e),_weight(w)
+    {
+
+    }
+    edge()
+    {
+
+    }
+    bool operator==(const edge &other) const
+    {
+        return ((_startVertex == other._startVertex)&&
+                (_endVertex == other._endVertex));
+    }
+
+
+};
+
+inline uint qHash(const edge &e, uint seed = 0) {
+    Q_UNUSED(seed)
+    return ::qHash(e._startVertex);
+}
+
+
+class node
+{
+    float _x,_y; //(x,y)
+    int _v;//vertex id
+    QMap<int , QVector< int > > _edges; //edges
+    QMap<int , QVector< edge > > _wEdge; // weighted edges
+public:
+    node()
+    {
+
+    }
+    node(float i,float j):_x(i),_y(j)
+    {
+
+    }
+    node(int id):_v(id)
+    {
+
+    }
+    void addVertexID(int vid)
+    {
+        _v = vid;
+    }
+    void addEdged(QMap<int , QVector< int > > e)
+    {
+        _edges = e;
+    }
+    void addWeightedEdged(QMap<int , QVector< edge > > we)
+    {
+        _wEdge = we;
+    }
+    int getNodeId() const
+    {
+        return _v;
+    }
+    float getX()
+    {
+        return _x;
+    }
+    float getY()
+    {
+        return _y;
+    }
+    QMap<int , QVector< int > > getEdges()
+    {
+        return _edges;
+    }
+    QMap<int , QVector< edge > > getWeightedEdge()
+    {
+        return _wEdge;
+    }
+
+    bool operator==(const node &other) const
+    {
+        return ((_v == other._v) &&
+                (_x == other._x) &&
+                (_y == other._y));
+    }
+};
+
+inline uint qHash(const node &n, uint seed = 0) {
+    Q_UNUSED(seed)
+    return ::qHash(n.getNodeId());
+}
+
+class maze
+{
+    QVector<node> _nodes;
+public:
+    maze()
+    {
+
+    }
+    void addNode(node node)
+    {
+        _nodes.push_back(node);
+    }
+    QVector<node>& getNodes()
+    {
+        return _nodes;
+    }
+
+};
+
+node createCornoerNode(int id)
+{
+
+}
+maze createMaze(int size)
+{
+    maze m;
+    int length = size -1;
+    for(int y =0; y<= length; ++y )
+    {
+        for(int x=0; x<= length; ++x)
+        {
+            node n(x,y);
+            int idx = y*size + x;
+            n.addVertexID(idx);
+            m.addNode(n);
+        }
+    }
+
+    return m;
+}
+
+void updateMaze(maze &m,const int size)
+{
+    QVector<node>& nodes = m.getNodes();
+    int length = size -1;
+    for(int y =0; y<= length; ++y )
+    {
+        for(int x=0; x<= length; ++x)
+        {
+            int idx = y*size + x;
+            int left = x-1;
+            int top  = y-1;
+            int right = x+1;
+            int bottom = y+1;
+
+            QMap<int , QVector< int > > e; //edges
+            QMap<int , QVector< edge > > we;
+            QVector< int > adjVetex;
+            QVector< edge > edgeVec;
+            node& n = nodes[idx];
+            int nodeId = n.getNodeId();
+            int vidx = -1;
+
+            if(left >= 0 && left <=length)
+            {
+                vidx = nodeId -1;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(right >= 0 && right <=length)
+            {
+                vidx = nodeId + 1;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(top >= 0 && top <=length)
+            {
+                vidx = nodeId - size;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(bottom >= 0 && bottom <=length)
+            {
+                vidx = nodeId + size;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            e.insert(idx,adjVetex);
+            we.insert(idx,edgeVec);
+            n.addEdged(e);
+            n.addWeightedEdged(we);
+        }
+    }
+}
+
+int getWeightOfExistingEdge(QVector<node> nodes, int currentNodeID, int nodeId)
+{
+    int retWeight = -1;
+    node n = nodes[nodeId];
+
+    QMap<int , QVector< edge > > wedges = n.getWeightedEdge();
+
+    QMap<int , QVector< edge > >::iterator itr = wedges.begin();
+    while(itr != wedges.end())
+    {
+        QVector< edge >  edgeVec = itr.value();
+        for(int i=0 ; i<edgeVec.size(); ++i )
+        {
+            edge edge = edgeVec[i];
+            if(edge._endVertex == currentNodeID &&
+               edge._startVertex ==  nodeId  )
+            {
+                retWeight = edge._weight;
+                break;
+            }
+
+        }
+        itr++;
+    }
+    return retWeight;
+}
+int getWeight()
+{
+    return qrand()%100;
+}
+void updateInnerMaze(maze &m,const int size)
+{
+    QVector<node>& nodes = m.getNodes();
+    float length = size -1;
+    int offset = size -1;
+    for(int y =0; y< length; ++y )
+    {
+        for(int x=0; x< length; ++x)
+        {
+            int idx = y*(size-1) + x;
+            node& n = nodes[idx];
+            float x1 = n.getX();
+            float y1 = n.getY();
+            float left = x1-1;
+            float top  = y1-1;
+            float right = x1+1;
+            float bottom = y1+1;
+
+            QMap<int , QVector< int > > e; //edges
+            QMap<int , QVector< edge > > we;
+            QVector< int > adjVetex;
+            QVector< edge > edgeVec;
+            int w = -1;
+
+            int nodeId = n.getNodeId();
+            int vidx = -1;
+
+            if(left >= 0.5 && left <= (length - 0.5))
+            {
+                vidx = nodeId -1;
+                adjVetex.push_back(vidx);
+
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(right >= 0.5 && right <= (length - 0.5))
+            {
+                vidx = nodeId + 1;
+                adjVetex.push_back(vidx);
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(top >= 0.5 && top <=(length - 0.5))
+            {
+                vidx = nodeId - offset;
+                adjVetex.push_back(vidx);
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(bottom >= 0.5 && bottom <=(length - 0.5))
+            {
+                vidx = nodeId + offset;
+                adjVetex.push_back(vidx);
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            e.insert(idx,adjVetex);
+            we.insert(idx,edgeVec);
+            n.addEdged(e);
+            n.addWeightedEdged(we);
+        }
+    }
+}
+maze createInnerMaze(int size)
+{
+    maze m;
+    int length = size -2;
+    for(int y =0; y<= length; ++y )
+    {
+        for(int x=0; x<= length; ++x)
+        {
+            float x1 = x + 0.5;
+            float y1 = y + 0.5;
+            node n(x1,y1);
+            int idx = y*(size-1) + x;
+            n.addVertexID(idx);
+            m.addNode(n);
+        }
+    }
+
+    return m;
+}
+edge getMinimum(QSet<edge> edgeSet)
+{
+    QSet<edge>::iterator itr = edgeSet.begin();
+
+    int min =110;
+    edge minEdge;
+    while( itr != edgeSet.end())
+    {
+        edge e = *itr;
+
+        if( e._weight < min )
+        {
+            minEdge = e;
+            min = e._weight;
+        }
+
+        ++itr;
+    }
+    return minEdge;
+}
+
+void addEdges(node n, QSet<edge>& e)
+{
+    //QMap<int , QVector< edge > > wedges = nodes[0].getWeightedEdge();
+    QMap<int , QVector< edge > > wedges = n.getWeightedEdge();
+
+    QMap<int , QVector< edge > >::iterator itr = wedges.begin();
+    while(itr != wedges.end())
+    {
+        QVector< edge >  edgeVec = itr.value();
+        for(int i=0 ; i<edgeVec.size(); ++i )
+        {
+            edge edge = edgeVec[i];
+            e.insert(edge);
+
+        }
+        itr++;
+    }
+}
+void updateEdgeList(QVector<node> nodes, int currentNodeID, int nodeId,QSet<edge>& e)
+{
+
+    node n = nodes[nodeId];
+
+    QMap<int , QVector< edge > > wedges = n.getWeightedEdge();
+
+    QMap<int , QVector< edge > >::iterator itr = wedges.begin();
+    while(itr != wedges.end())
+    {
+        QVector< edge >  edgeVec = itr.value();
+        for(int i=0 ; i<edgeVec.size(); ++i )
+        {
+            edge edge = edgeVec[i];
+            struct edge edgeRemoved(edge._endVertex,edge._startVertex);
+            if(edge._endVertex == currentNodeID &&
+               edge._startVertex ==  nodeId  )
+            {
+                e.remove(edgeRemoved);
+                break;
+            }
+
+        }
+        itr++;
+    }
+}
+QSet<edge> runMST(const maze& m)
+{
+    maze m1 = m;
+    maze MST;
+    QSet<node> s1,s2;
+    QSet<edge> t,e;
+    QVector<node>& nodes = m1.getNodes();
+    node initNode = nodes.at(0);
+    s1.insert(initNode);
+
+    for(int i=1; i < nodes.size(); ++i)
+    {
+         s2.insert(nodes[i]);
+    }
+
+    //init E with intial edge
+    addEdges(initNode,e);
+
+    while(!s2.empty())
+    {
+        edge minEdge = getMinimum(e);
+
+        t.insert(minEdge);
+        e.remove(minEdge);
+
+        node nextode = nodes.at(minEdge._endVertex);
+        int s1Size = s1.size();
+        int s2Size  = s2.size();
+        s2.remove(nextode);
+        s1.insert(nextode);
+
+        node s2Node = nodes.at(minEdge._endVertex);
+        if( s1.size() == s1Size && s2Size == s2.size())
+        {
+            QSet<node>::iterator itr = s2.begin();
+            if(itr != s2.end())
+                s2Node = *itr;
+        }
+
+
+
+        addEdges(s2Node,e);
+        updateEdgeList(nodes,minEdge._endVertex,minEdge._startVertex,e);
+    }
+
+    return t;
+}
+
+Dialog::Dialog(QWidget *parent)
+    : QDialog(parent)
+    , ui(new Ui::Dialog)
+{
+    ui->setupUi(this);
+}
+
+Dialog::~Dialog()
+{
+    delete ui;
+}
+
+void Dialog::paintEvent(QPaintEvent *e)
+{
+    QPainter painter(this);
+    QPen linepen(Qt::red);
+
+    painter.setPen(linepen);
+    //painter.drawLine(10,10,100,100);
+
+    maze m  = createMaze(5);
+    maze im = createInnerMaze(5);
+    updateMaze(m,5);
+    updateInnerMaze(im,5);
+
+    QSet<edge> t = runMST(im);
+
+    QSet<edge>::iterator itr = t.begin();
+
+    QVector<QPointF> pointList;
+    while( itr != t.end())
+    {
+        edge e = *itr;
+        int s = e._startVertex;
+        int end = e._endVertex;
+
+        QVector<node>& nodes = im.getNodes();
+
+        node startnode = nodes[s];
+        node endNode =  nodes[end];
+
+        QPointF p1(startnode.getX()*50,startnode.getY()*50);
+        QPointF p2(endNode.getX()*50,endNode.getY()*50);
+
+
+        pointList.push_back(p1);
+        pointList.push_back(p2);
+
+        itr++;
+    }
+
+    painter.drawLines(pointList);
+
+//    QVector<node>& nodes = m.getNodes();
+
+//    QVector<QPointF> pointListOuterGrid;
+//    QVector<node>::iterator oitr = nodes.begin();
+
+//    while(oitr != nodes.end())
+//    {
+//        node startn = *oitr;
+//        oitr++;
+
+//        QPointF p1(startn.getX()*50,startn.getY()*50);
+
+//        pointListOuterGrid.push_back(p1);
+
+//    }
+
+//    QPen linepenBlack(Qt::black);
+//    painter.setPen(linepenBlack);
+//    painter.drawLines(pointListOuterGrid);
+
+
+}

@@ -1,0 +1,353 @@
+#include "maze.h"
+
+maze::maze()
+{
+
+}
+void maze::addNode(node node)
+{
+    _nodes.push_back(node);
+}
+QVector<node>& maze::getNodes()
+{
+    return _nodes;
+}
+
+void maze::createMaze(int size)
+{
+    int length = size -1;
+    for(int y =0; y<= length; ++y )
+    {
+        for(int x=0; x<= length; ++x)
+        {
+            node n(x,y);
+            int idx = y*size + x;
+            n.addVertexID(idx);
+            addNode(n);
+        }
+    }
+}
+
+void maze::updateMaze(const int size)
+{
+    QVector<node>& nodes = getNodes();
+    int length = size -1;
+
+
+    for(int y =0; y<= length; ++y )
+    {
+        for(int x=0; x<= length; ++x)
+        {
+            int idx = y*size + x;
+            int left = x-1;
+            int top  = y-1;
+            int right = x+1;
+            int bottom = y+1;
+
+
+            QVector< int > adjVetex;
+            QVector< edge > edgeVec;
+            node& n = nodes[idx];
+            int nodeId = n.getNodeId();
+            int vidx = -1;
+
+            if(left >= 0 && left <=length)
+            {
+                vidx = nodeId -1;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(right >= 0 && right <=length)
+            {
+                vidx = nodeId + 1;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(top >= 0 && top <=length)
+            {
+                vidx = nodeId - size;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(bottom >= 0 && bottom <=length)
+            {
+                vidx = nodeId + size;
+                adjVetex.push_back(vidx);
+                edge weightedEdge(idx,vidx,1);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            n.addEdged(adjVetex);
+            n.addWeightedEdged(edgeVec);
+        }
+    }
+}
+
+int maze::getWeightOfExistingEdge(QVector<node> nodes, int currentNodeID, int nodeId)
+{
+    int retWeight = -1;
+    node n = nodes[nodeId];
+
+    QVector< edge >  wedges = n.getWeightedEdge();
+
+    QVector< edge > ::iterator itr = wedges.begin();
+    while(itr != wedges.end())
+    {
+        edge edge = *itr;
+
+        if(edge._endVertex == currentNodeID &&
+                edge._startVertex ==  nodeId  )
+        {
+            retWeight = edge._weight;
+            break;
+        }
+        itr++;
+    }
+    return retWeight;
+}
+int maze::getWeight()
+{
+    return qrand()%100;
+}
+void maze::updateInnerMaze(const int size)
+{
+    QVector<node>& nodes = getNodes();
+    float length = size -1;
+    int offset = size -1;
+    for(int y =0; y< length; ++y )
+    {
+        for(int x=0; x< length; ++x)
+        {
+            int idx = y*(size-1) + x;
+            node& n = nodes[idx];
+            float x1 = n.getX();
+            float y1 = n.getY();
+            float left = x1-1;
+            float top  = y1-1;
+            float right = x1+1;
+            float bottom = y1+1;
+
+
+            QVector< int > adjVetex;
+            QVector< edge > edgeVec;
+            int w = -1;
+
+            int nodeId = n.getNodeId();
+            int vidx = -1;
+
+            if(left >= 0.5 && left <= (length - 0.5))
+            {
+                vidx = nodeId -1;
+                adjVetex.push_back(vidx);
+
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(right >= 0.5 && right <= (length - 0.5))
+            {
+                vidx = nodeId + 1;
+                adjVetex.push_back(vidx);
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(top >= 0.5 && top <=(length - 0.5))
+            {
+                vidx = nodeId - offset;
+                adjVetex.push_back(vidx);
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            if(bottom >= 0.5 && bottom <=(length - 0.5))
+            {
+                vidx = nodeId + offset;
+                adjVetex.push_back(vidx);
+                w = getWeightOfExistingEdge(nodes, idx, vidx);
+                if(w == -1)
+                {
+                    w = getWeight();
+                }
+                edge weightedEdge(idx,vidx,w);
+                edgeVec.push_back(weightedEdge);
+            }
+
+            n.addEdged(adjVetex);
+            n.addWeightedEdged(edgeVec);
+        }
+    }
+}
+void maze::createInnerMaze(int size)
+{
+    int length = size -2;
+    for(int y =0; y<= length; ++y )
+    {
+        for(int x=0; x<= length; ++x)
+        {
+            float x1 = x + 0.5;
+            float y1 = y + 0.5;
+            node n(x1,y1);
+            int idx = y*(size-1) + x;
+            n.addVertexID(idx);
+            addNode(n);
+        }
+    }
+}
+edge maze::getMinimum(QSet<edge> edgeSet)
+{
+    QSet<edge>::iterator itr = edgeSet.begin();
+
+    int min =110;
+    edge minEdge;
+    while( itr != edgeSet.end())
+    {
+        edge e = *itr;
+
+        if( e._weight < min )
+        {
+            minEdge = e;
+            min = e._weight;
+        }
+
+        ++itr;
+    }
+    return minEdge;
+}
+
+void maze::addEdges(node n, QSet<edge>& e)
+{
+    if( e.size() != 0)
+    {
+    QSet<edge>::iterator edgeSetItr = e.begin();
+    while(edgeSetItr != e.end())
+    {
+        edge existingEdge = *edgeSetItr;
+        QVector< edge > wedges = n.getWeightedEdge();
+
+        QVector< edge >::iterator itr = wedges.begin();
+        while(itr != wedges.end())
+        {
+            edge edge = *itr;
+
+            if(edge._endVertex == existingEdge._startVertex &&
+               edge._startVertex ==  existingEdge._endVertex  )
+            {
+
+            }
+            else
+            {
+                e.insert(edge);
+            }
+            itr++;
+        }
+
+        edgeSetItr++;
+    }
+    }
+    else
+    {
+        QVector< edge > wedges = n.getWeightedEdge();
+
+        QVector< edge >::iterator itr = wedges.begin();
+        while(itr != wedges.end())
+        {
+            edge edge = *itr;
+
+
+            e.insert(edge);
+            itr++;
+        }
+    }
+}
+void maze::updateEdgeList(QVector<node> nodes, int currentNodeID, int nodeId,QSet<edge>& e)
+{
+
+    node n = nodes[nodeId];
+
+    QVector< edge > wedges = n.getWeightedEdge();
+
+    QVector< edge >::iterator itr = wedges.begin();
+    while(itr != wedges.end())
+    {
+        edge  edge = *itr;
+
+        struct edge edgeRemoved(edge._endVertex,edge._startVertex);
+        if(edge._endVertex == currentNodeID &&
+           edge._startVertex ==  nodeId  )
+        {
+            e.remove(edgeRemoved);
+            break;
+        }
+
+        itr++;
+    }
+}
+QSet<edge> maze::runMST()
+{
+
+    maze MST;
+    QSet<node> s1,s2;
+    QSet<edge> t,e;
+    QVector<node>& nodes = getNodes();
+    node initNode = nodes.at(0);
+    s1.insert(initNode);
+
+    for(int i=1; i < nodes.size(); ++i)
+    {
+         s2.insert(nodes[i]);
+    }
+
+    //init E with intial edge
+    addEdges(initNode,e);
+
+    while(!s2.empty())
+    {
+        edge minEdge = getMinimum(e);
+
+        t.insert(minEdge);
+        e.remove(minEdge);
+
+        node nextode = nodes.at(minEdge._endVertex);
+        int s1Size = s1.size();
+        int s2Size  = s2.size();
+        s2.remove(nextode);
+        s1.insert(nextode);
+
+        node s2Node = nodes.at(minEdge._endVertex);
+        if( s1.size() == s1Size && s2Size == s2.size())
+        {
+            QSet<node>::iterator itr = s2.begin();
+            if(itr != s2.end())
+                s2Node = *itr;
+        }
+
+
+
+        addEdges(s2Node,e);
+        updateEdgeList(nodes,minEdge._endVertex,minEdge._startVertex,e);
+    }
+
+    return t;
+}
