@@ -33,6 +33,8 @@ find and search
 multex
 lock
 shared_lock
+factory pattern
+abstract factory pattern
 
 
 

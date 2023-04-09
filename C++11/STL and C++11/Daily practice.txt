@@ -1443,6 +1443,103 @@ int main()
   
    return 0;
 }
+--------------------
+
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <memory>
+#include <vector>
+#include <algorithm>
+using namespace std;
+
+
+class weatherInterface
+{
+  public:
+  weatherInterface()
+  {
+      
+  }
+  virtual ~weatherInterface()
+  {
+      
+  }
+  virtual void operator()( int temp, int speed ) = 0;
+};
+
+class BarodaWeather:public weatherInterface
+{
+    public:
+    void operator()( int temp, int speed)
+    {
+        cout<< "Temprature : "<<temp<<" air speed: "<<speed<<"\n";
+    }
+};
+
+class PuneWather: public weatherInterface
+{
+ public:
+    void operator()( int temp, int speed)
+    {
+        cout<< "Pune Temprature : "<<temp<<" air speed: "<<speed<<"\n";
+    }
+};
+
+template<typename weatherSTType>
+class weatherStation
+{
+    std::vector<std::unique_ptr< weatherSTType >> _unqPtr;
+    public:
+    template<typename ProcType, typename ... ARGS>
+    void create(ARGS&& ... args)
+    {
+        _unqPtr.emplace_back( std::make_unique< ProcType >( std::forward<ARGS>(args) ... ) );
+    }
+    
+    template<typename ...ARGS>
+    void update(ARGS&& ... args)
+    {
+        for( const auto& ptr: _unqPtr)
+        {
+            ptr->operator()(std::forward<ARGS>(args) ...);
+        }
+    }
+};
+
+class allIndia_c
+{
+    weatherStation<weatherInterface> wst;
+    public:
+    void registerWeatehrStation()
+    {
+        wst.create<BarodaWeather>();
+        wst.create<PuneWather>();
+    }
+    
+    void prp(int i, int j)
+    {
+        wst.update(i,j);
+    }
+};
+
+int main()
+{
+    
+   allIndia_c obj;
+   obj.registerWeatehrStation();
+   obj.prp(6,7);
+    
+
+    return 0;
+}
+
 -------------
 unstable partition based on predicate
 // Online C++ compiler to run C++ program online
@@ -2004,4 +2101,401 @@ int main()
    cout<<*p;
    cout<<p;
    return 0;
+}
+--------------------
+stll strugulling with std::visit
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+#include <vector>
+#include <any>
+#include <string>
+#include <variant>
+#include <optional>
+#include <typeinfo>
+
+using namespace std;
+
+template <class... Args>
+auto any_to_variant_cast(std::any a) -> std::variant<Args...>
+{
+    if (!a.has_value())
+    {
+        throw std::bad_any_cast();
+    }
+
+    std::optional<std::variant<Args...>> v = std::nullopt;
+
+     bool found = ((a.type() == typeid(Args) && (v = std::any_cast<Args>(std::move(a)), true)) || ...);
+
+    if (!found)
+    {
+        cout<<"here\n";
+        throw std::bad_any_cast{};
+    }
+
+    return std::move(*v);
+}
+
+template<typename ... Args>
+class variData
+{
+   std::vector< std::any > data;
+   public:
+   //template < typename ... Args >
+   variData(Args&& ... args):data{std::forward< Args >( args ) ...}
+   {
+       
+   }
+  
+   
+   void printData(const std::any &variable)
+   {
+       std::variant<double, int, float> v;
+       for(auto a:data)
+        {
+            auto value = any_to_variant_cast<double, int, float>(a);
+            v = value;
+        }
+       
+       std::visit(
+        [](auto arg)
+       { 
+           cout<<arg<<"\n";
+           //this->printData(arg); 
+           
+       } , v);
+   }
+   void operator()(const int &variable)
+   {
+       cout<<variable<<"\n";
+   }
+   void operator()(const double &variable)
+   {
+       cout<<variable<<"\n";
+   }
+   void operator()(const float &variable)
+   {
+       cout<<variable<<"\n";
+   }
+   
+   void add()
+   {
+       this->printData(data);
+   }
+   
+};
+
+int main()
+{
+    variData<double, int, float> o1{0.5,1,5.5};
+    
+    o1.add();
+
+    return 0;
+}
+
+--------------
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <any>
+#include <variant>
+#include <optional>
+#include <typeinfo>
+#include <vector>
+#include <iostream>
+
+struct A {};
+
+auto foo(int val) -> void { std::cout << val << std::endl; }
+auto foo(A) -> void { std::cout << "A" << std::endl; }
+
+template <class... Args>
+auto any_to_variant_cast(std::any a) -> std::variant<Args...>
+{
+    if (!a.has_value())
+    {
+        throw std::bad_any_cast();
+    }
+
+    std::optional<std::variant<Args...>> v = std::nullopt;
+
+    bool found = ((a.type() == typeid(Args) && (v = std::any_cast<Args>(std::move(a)), true)) || ...);
+
+    if (!found)
+    {
+        throw std::bad_any_cast{};
+    }
+
+    return *v;
+}
+
+auto test(const std::any& x)
+{
+    auto v = any_to_variant_cast<int, A>(x);
+    std::visit([](auto v) { foo(v); }, v);
+}
+
+int main()
+{
+    std::vector< std::any > data{std::any{24},std::any{A{}}};
+    
+    for(auto a:data)
+    {
+        test(a);
+    }
+    //test(std::any{24},std::any{A{}});
+    //test(std::any{A{}});
+
+    try
+    {
+        test(std::any{'c'});
+    }
+    catch (std::bad_any_cast&)
+    {
+        std::cout << "bad_any_cast";
+    }
+}
+---------------- 
+Factory pattern (creational)
+/******************************************************************************
+
+                              Online C++ Compiler.
+               Code, Compile, Run and Debug C++ program online.
+Write your code in this editor and press "Run" button to compile and execute it.
+
+*******************************************************************************/
+
+#include <iostream>
+
+using namespace std;
+
+class productInterface
+{
+    public:
+    
+    virtual ~productInterface()
+    {
+        
+    }
+    virtual void operation() = 0;
+};
+
+class product1: public productInterface
+{
+  public:
+  ~product1()
+  {
+      
+  }
+  void operation()
+  {
+      cout<<" Operation of the Product 1\n";
+  }
+  
+};
+
+class product2: public productInterface
+{
+  public:
+  ~product2()
+  {
+      
+  }
+  void operation()
+  {
+      cout<<" Operation of the Product 2\n";
+  }
+  
+};
+
+
+class creator
+{
+    public:
+    virtual ~creator()
+    {
+        
+    }
+    virtual productInterface* factoryMethod() const = 0;
+    
+    void doSomeOperation() const
+    {
+        productInterface* p = this->factoryMethod();
+        p->operation();
+        delete p;
+    }
+};
+
+class creator1: public creator
+{
+    public:
+    ~creator1()
+    {
+        
+    }
+    productInterface* factoryMethod() const
+    {
+        return new product1();
+    }
+    
+};
+
+class creator2: public creator
+{
+    public:
+    ~creator2()
+    {
+        
+    }
+    productInterface* factoryMethod() const
+    {
+        return new product2();
+    }
+    
+};
+
+void ClientCode(const creator& creator) 
+{
+ creator.doSomeOperation();
+}
+
+int main()
+{
+    creator * c = new creator1();
+    ClientCode(*c);
+    
+    c = new creator2();
+    ClientCode(*c);
+
+    return 0;
+}
+
+
+---------------
+abstract factory
+
+/******************************************************************************
+
+Welcome to GDB Online.
+GDB online is an online compiler and debugger tool for C, C++, Python, Java, PHP, Ruby, Perl,
+C#, OCaml, VB, Swift, Pascal, Fortran, Haskell, Objective-C, Assembly, HTML, CSS, JS, SQLite, Prolog.
+Code, Compile, Run and Debug online from anywhere in world.
+
+*******************************************************************************/
+#include <iostream>
+
+using namespace std;
+
+class chairFactroy
+{
+    public:
+    virtual void getChair() =0;
+};
+
+class classicalChair: public chairFactroy
+{
+    public:
+    void getChair()
+    {
+        cout<<"This is a classical chair\n";
+    }
+};
+
+class modernChair: public chairFactroy
+{
+    public:
+    void getChair()
+    {
+        cout<<"This is a modern chair\n";
+    }
+};
+
+class softFactroy
+{
+    public:
+    virtual void getSofa() =0;
+};
+
+class classicalSofa: public softFactroy
+{
+    public:
+    void getSofa()
+    {
+        cout<<"This is a classical sofa\n";
+    }
+};
+
+class modernSofa: public softFactroy
+{
+    public:
+    void getSofa()
+    {
+        cout<<"This is a modern sofa\n";
+    }
+};
+
+class furnitureFactory
+{
+  public:
+  virtual chairFactroy* createChair() = 0;
+  virtual softFactroy* createSofa() = 0;
+};
+
+class classicalFurniture: public furnitureFactory
+{
+  public:
+  chairFactroy* createChair()
+  {
+     return new classicalChair();
+  }
+  softFactroy* createSofa()
+  {
+      return new classicalSofa();
+  }
+};
+
+class modernFurniture: public furnitureFactory
+{
+  public:
+  chairFactroy* createChair()
+  {
+      return new modernChair();
+  }
+  softFactroy* createSofa()
+  {
+     return new modernSofa();
+  }
+};
+
+void getFurniture(furnitureFactory *f)
+{
+    chairFactroy* chair = f->createChair();
+    chair->getChair();
+    softFactroy* sofa = f->createSofa();
+    sofa->getSofa();
+}
+
+int main()
+{
+    modernFurniture m;
+    getFurniture(&m);
+    
+    classicalFurniture c;
+    getFurniture(&c);
+    
+
+    return 0;
 }
